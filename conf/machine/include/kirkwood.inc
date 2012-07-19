@@ -4,10 +4,6 @@
 require conf/machine/include/tune-arm926ejs.inc
 TARGET_ARCH = "arm"
 
-PREFERRED_PROVIDER_virtual/bootloader = "u-boot-kirkwood"
-PREFERRED_PROVIDER_virtual/kernel = "linux-yocto"
-
-EXTRA_IMAGEDEPENDS += "virtual/bootloader virtual/kernel"
 
 SERIAL_CONSOLE = "115200 ttyS0"
 
