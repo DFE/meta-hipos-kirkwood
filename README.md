@@ -1,3 +1,7 @@
+This project is currently unmaintained and not used by HidaV anymore.
+=====================================================================
+
+
 meta-hidav-kirkwood
 ===================
 
