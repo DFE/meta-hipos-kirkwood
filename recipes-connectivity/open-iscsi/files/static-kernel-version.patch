@@ -1,0 +1,12 @@
+diff --git a/kernel/Makefile b/kernel/Makefile
+index b4e8eb6..1a39ffb 100644
+--- a/kernel/Makefile
++++ b/kernel/Makefile
+@@ -68,7 +68,7 @@ KSUBLEVEL = $(shell cat $(KSRC)/Makefile | awk -F= '/^SUBLEVEL =/ {print $$2}' |
+ 
+ 
+ KERNEL_TARGET=linux_2_6_$(KSUBLEVEL)
+-kernel_check: $(KERNEL_TARGET)
++kernel_check: $(unpatch_code)
+ 
+ linux_2_6_14: has_14to23_patch
