@@ -1,16 +1,39 @@
-From aa1a38eed36a1796b97e687df17e50f01de164c9 Mon Sep 17 00:00:00 2001
+From 4779aafc0805dd8f62313d1ecbb0033fc79b7a07 Mon Sep 17 00:00:00 2001
 From: Mario Schuknecht <schuknecht@dresearch-fe.de>
-Date: Wed, 23 Jan 2013 08:51:29 +0100
-Subject: [PATCH] hikirk board support
+Date: Wed, 23 Jan 2013 12:27:31 +0100
+Subject: [PATCH] hikirk: add spi support
 
-Add hikirk board support.
+Add spi support to hikirk board.
 
 Signed-off-by: Mario Schuknecht <schuknecht@dresearch-fe.de>
 ---
- boards.cfg               |    1 +
- include/configs/openrd.h |    6 ++++++
- 2 files changed, 7 insertions(+)
+ board/Marvell/openrd/openrd.c |    7 +++++++
+ boards.cfg                    |    1 +
+ include/configs/openrd.h      |   10 ++++++++++
+ 3 files changed, 18 insertions(+)
 
+diff --git a/board/Marvell/openrd/openrd.c b/board/Marvell/openrd/openrd.c
+index 2a10e69..e97dd0a 100644
+--- a/board/Marvell/openrd/openrd.c
++++ b/board/Marvell/openrd/openrd.c
+@@ -49,10 +49,17 @@ int board_early_init_f(void)
+ 
+ 	/* Multi-Purpose Pins Functionality configuration */
+ 	u32 kwmpp_config[] = {
++#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP0_SPI_SCn,
++		MPP1_SPI_MOSI,
++		MPP2_SPI_SCK,
++		MPP3_SPI_MISO,
++#else
+ 		MPP0_NF_IO2,
+ 		MPP1_NF_IO3,
+ 		MPP2_NF_IO4,
+ 		MPP3_NF_IO5,
++#endif
+ 		MPP4_NF_IO6,
+ 		MPP5_NF_IO7,
+ 		MPP6_SYSRST_OUTn,
 diff --git a/boards.cfg b/boards.cfg
 index 3cf75c3..1d5d47e 100644
 --- a/boards.cfg
@@ -24,7 +47,7 @@ index 3cf75c3..1d5d47e 100644
  openrd_client                arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_CLIENT
  openrd_ultimate              arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_ULTIMATE
 diff --git a/include/configs/openrd.h b/include/configs/openrd.h
-index 53bafe1..e3b8927 100644
+index 53bafe1..62ea87e 100644
 --- a/include/configs/openrd.h
 +++ b/include/configs/openrd.h
 @@ -33,6 +33,9 @@
@@ -45,11 +68,15 @@ index 53bafe1..e3b8927 100644
  
  /*
   * High Level Configuration Options (easy to change)
-@@ -65,7 +69,9 @@
+@@ -65,7 +69,13 @@
  #define CONFIG_CMD_DHCP
  #define CONFIG_CMD_ENV
  #define CONFIG_CMD_MII
-+#ifndef CONFIG_BOARD_IS_HIKIRK
++#ifdef CONFIG_BOARD_IS_HIKIRK
++#define CONFIG_SPI_FLASH_MACRONIX
++#define CONFIG_CMD_SPI
++#define CONFIG_CMD_SF
++#else
  #define CONFIG_CMD_NAND
 +#endif
  #define CONFIG_CMD_PING
