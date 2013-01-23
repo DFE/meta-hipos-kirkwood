@@ -1,22 +1,22 @@
-From 4779aafc0805dd8f62313d1ecbb0033fc79b7a07 Mon Sep 17 00:00:00 2001
+From f7e13a598ea5fc2702e30d1a724b8afc139e4b1b Mon Sep 17 00:00:00 2001
 From: Mario Schuknecht <schuknecht@dresearch-fe.de>
-Date: Wed, 23 Jan 2013 12:27:31 +0100
-Subject: [PATCH] hikirk: add spi support
+Date: Wed, 23 Jan 2013 15:26:12 +0100
+Subject: [PATCH] hikirk: add hikirk board
 
-Add spi support to hikirk board.
+Add support for the hikirk board.
 
 Signed-off-by: Mario Schuknecht <schuknecht@dresearch-fe.de>
 ---
- board/Marvell/openrd/openrd.c |    7 +++++++
+ board/Marvell/openrd/openrd.c |   14 ++++++++++++++
  boards.cfg                    |    1 +
  include/configs/openrd.h      |   10 ++++++++++
- 3 files changed, 18 insertions(+)
+ 3 files changed, 25 insertions(+)
 
 diff --git a/board/Marvell/openrd/openrd.c b/board/Marvell/openrd/openrd.c
-index 2a10e69..e97dd0a 100644
+index 2a10e69..9292708 100644
 --- a/board/Marvell/openrd/openrd.c
 +++ b/board/Marvell/openrd/openrd.c
-@@ -49,10 +49,17 @@ int board_early_init_f(void)
+@@ -49,12 +49,21 @@ int board_early_init_f(void)
  
  	/* Multi-Purpose Pins Functionality configuration */
  	u32 kwmpp_config[] = {
@@ -25,15 +25,33 @@ index 2a10e69..e97dd0a 100644
 +		MPP1_SPI_MOSI,
 +		MPP2_SPI_SCK,
 +		MPP3_SPI_MISO,
++		MPP4_GPIO,
++		MPP5_GPO,
 +#else
  		MPP0_NF_IO2,
  		MPP1_NF_IO3,
  		MPP2_NF_IO4,
  		MPP3_NF_IO5,
-+#endif
  		MPP4_NF_IO6,
  		MPP5_NF_IO7,
++#endif
  		MPP6_SYSRST_OUTn,
+ 		MPP7_GPO,
+ 		MPP8_TW_SDA,
+@@ -67,8 +76,13 @@ int board_early_init_f(void)
+ 		MPP15_SD_D1,
+ 		MPP16_SD_D2,
+ 		MPP17_SD_D3,
++#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP18_GPO,
++		MPP19_GPO,
++#else
+ 		MPP18_NF_IO0,
+ 		MPP19_NF_IO1,
++#endif
+ 		MPP20_GE1_0,
+ 		MPP21_GE1_1,
+ 		MPP22_GE1_2,
 diff --git a/boards.cfg b/boards.cfg
 index 3cf75c3..1d5d47e 100644
 --- a/boards.cfg
