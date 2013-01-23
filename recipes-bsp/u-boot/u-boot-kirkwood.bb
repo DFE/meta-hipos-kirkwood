@@ -18,3 +18,12 @@ do_compile_append_hidav-kirkwood () {
 	done
 }
 
+do_install_append_hidav-kirkwood () {
+	install ${S}/u-boot_hikirk_*.bin ${D}/boot/
+}
+
+do_deploy_append_hidav-kirkwood () {
+	rm -f ${DEPLOYDIR}/u-boot_hikirk_*.bin
+	install ${S}/u-boot_hikirk_*.bin ${DEPLOYDIR}/
+}
+
