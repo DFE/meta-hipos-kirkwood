@@ -6,6 +6,7 @@ SRC_URI +=  " file://kwbimage_hikirk_533ddr3_nand.cfg \
 	      file://kwbimage_hikirk_533ddr3_uart.cfg \
 	      file://kwbimage_hikirk_533ddr3_sata.cfg \
 	      file://kwbimage_hikirk_533ddr3_spi.cfg \
+	      file://hikirk-board-support.patch \
 	    "
 
 do_compile_append_hidav-kirkwood () {
