@@ -1,0 +1,31 @@
+From bc401c1d58160da0e7a6e96378e69b7c04c002ea Mon Sep 17 00:00:00 2001
+From: Mario Schuknecht <schuknecht@dresearch-fe.de>
+Date: Fri, 25 Jan 2013 10:49:32 +0100
+Subject: [PATCH] xor: set xor min count
+
+If iperf is started in server mode and a TCP test is performed the xor/dma
+engine fails.
+According to the 88F6282 datasheet the minimum byte count for XOR engine is
+16 Bytes. Set the MV_XOR_MIN_BYTE_COUNT of 128 to 16.
+
+Signed-off-by: Mario Schuknecht <schuknecht@dresearch-fe.de>
+---
+ drivers/dma/mv_xor.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/dma/mv_xor.h b/drivers/dma/mv_xor.h
+index 654876b..a04ee7d 100644
+--- a/drivers/dma/mv_xor.h
++++ b/drivers/dma/mv_xor.h
+@@ -172,7 +172,7 @@ struct mv_xor_desc {
+ #define mv_hw_desc_slot_idx(hw_desc, idx)	\
+ 	((void *)(((unsigned long)hw_desc) + ((idx) << 5)))
+ 
+-#define MV_XOR_MIN_BYTE_COUNT	(128)
++#define MV_XOR_MIN_BYTE_COUNT	(16)
+ #define XOR_MAX_BYTE_COUNT	((16 * 1024 * 1024) - 1)
+ #define MV_XOR_MAX_BYTE_COUNT	XOR_MAX_BYTE_COUNT
+ 
+-- 
+1.7.9.5
+
