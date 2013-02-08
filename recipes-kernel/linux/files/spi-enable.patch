@@ -36,7 +36,7 @@ index 7e99c3f..ce7cf52 100644
 +                .modalias       = "m25p80",
 +                .platform_data  = &spi_flash,
 +                .irq            = -1,
-+                .max_speed_hz   = 20000000,
++                .max_speed_hz   = 80000000,
 +                .bus_num        = 0,
 +                .chip_select    = 0,
 +        },
