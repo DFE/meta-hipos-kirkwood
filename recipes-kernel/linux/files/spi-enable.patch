@@ -1,0 +1,63 @@
+diff --git a/arch/arm/mach-kirkwood/openrd-setup.c b/arch/arm/mach-kirkwood/openrd-setup.c
+index 7e99c3f..ce7cf52 100644
+--- a/arch/arm/mach-kirkwood/openrd-setup.c
++++ b/arch/arm/mach-kirkwood/openrd-setup.c
+@@ -24,6 +24,9 @@
+ #include "common.h"
+ #include "mpp.h"
+ 
++#include <linux/spi/flash.h>
++#include <linux/spi/spi.h>
++
+ static struct mtd_partition openrd_nand_parts[] = {
+ 	{
+ 		.name		= "u-boot",
+@@ -41,6 +44,40 @@ static struct mtd_partition openrd_nand_parts[] = {
+ 	},
+ };
+ 
++static struct mtd_partition spi_flash_parts[] = {
++        {
++                .name = "u-boot",
++                .size = 4194304,
++                .offset = 0,
++        },
++};
++
++static const struct flash_platform_data spi_flash = {
++        .type           = "MX25L3206E",
++        .name           = "spi_flash",
++        .parts          = spi_flash_parts,
++        .nr_parts       = 1,
++};  
++
++static struct spi_board_info __initdata spi_slave_info[] = {
++        {
++                .modalias       = "m25p80",
++                .platform_data  = &spi_flash,
++                .irq            = -1,
++                .max_speed_hz   = 20000000,
++                .bus_num        = 0,
++                .chip_select    = 0,
++        },
++};
++
++void __init spi_register_flash(void)
++{
++        spi_register_board_info(spi_slave_info,
++                                ARRAY_SIZE(spi_slave_info));
++        kirkwood_spi_init();
++}
++
++
+ static struct mv643xx_eth_platform_data openrd_ge00_data = {
+ 	.phy_addr	= MV643XX_ETH_PHY_ADDR(8),
+ };
+@@ -160,6 +197,7 @@ static void __init openrd_init(void)
+ 
+ 	kirkwood_uart0_init();
+ 	kirkwood_nand_init(ARRAY_AND_SIZE(openrd_nand_parts), 25);
++        spi_register_flash();
+ 
+ 	kirkwood_ehci_init();
+ 
