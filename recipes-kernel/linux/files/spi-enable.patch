@@ -1,5 +1,5 @@
 diff --git a/arch/arm/mach-kirkwood/openrd-setup.c b/arch/arm/mach-kirkwood/openrd-setup.c
-index 7e99c3f..ce7cf52 100644
+index 7e99c3f..a8f026d 100644
 --- a/arch/arm/mach-kirkwood/openrd-setup.c
 +++ b/arch/arm/mach-kirkwood/openrd-setup.c
 @@ -24,6 +24,9 @@
@@ -12,23 +12,49 @@ index 7e99c3f..ce7cf52 100644
  static struct mtd_partition openrd_nand_parts[] = {
  	{
  		.name		= "u-boot",
-@@ -41,6 +44,40 @@ static struct mtd_partition openrd_nand_parts[] = {
+@@ -41,6 +44,66 @@ static struct mtd_partition openrd_nand_parts[] = {
  	},
  };
  
 +static struct mtd_partition spi_flash_parts[] = {
 +        {
-+                .name = "u-boot",
-+                .size = 4194304,
++                .name = "boot-header",
++                .size = 65536,
 +                .offset = 0,
 +        },
++	{
++                .name = "u-boot-0",
++                .size = 950272,
++                .offset = 65536,
++        },
++	{
++                .name = "u-boot-1",
++                .size = 950272,
++                .offset = 1015808,
++        },
++	{
++                .name = "u-boot-env",
++                .size = 131072,
++                .offset = 1966080,
++        },
++	{
++                .name = "kernel-0",
++                .size = 7340032,
++                .offset = 2097152,
++        },
++	{
++                .name = "kernel-1",
++                .size = 7340032,
++                .offset = 9437184,
++        },
++
 +};
 +
 +static const struct flash_platform_data spi_flash = {
-+        .type           = "MX25L3206E",
++        .type           = "N25Q128A13E",
 +        .name           = "spi_flash",
 +        .parts          = spi_flash_parts,
-+        .nr_parts       = 1,
++        .nr_parts       = 6,
 +};  
 +
 +static struct spi_board_info __initdata spi_slave_info[] = {
@@ -53,11 +79,24 @@ index 7e99c3f..ce7cf52 100644
  static struct mv643xx_eth_platform_data openrd_ge00_data = {
  	.phy_addr	= MV643XX_ETH_PHY_ADDR(8),
  };
-@@ -160,6 +197,7 @@ static void __init openrd_init(void)
+@@ -160,6 +223,7 @@ static void __init openrd_init(void)
  
  	kirkwood_uart0_init();
  	kirkwood_nand_init(ARRAY_AND_SIZE(openrd_nand_parts), 25);
-+        spi_register_flash();
++	spi_register_flash();
  
  	kirkwood_ehci_init();
  
+diff --git a/drivers/mtd/devices/m25p80.c b/drivers/mtd/devices/m25p80.c
+index 1924d24..f5bab8a 100644
+--- a/drivers/mtd/devices/m25p80.c
++++ b/drivers/mtd/devices/m25p80.c
+@@ -649,6 +649,8 @@ static const struct spi_device_id m25p_ids[] = {
+ 	{ "mx25l8005",   INFO(0xc22014, 0, 64 * 1024,  16, 0) },
+ 	{ "mx25l1606e",  INFO(0xc22015, 0, 64 * 1024,  32, SECT_4K) },
+ 	{ "mx25l3205d",  INFO(0xc22016, 0, 64 * 1024,  64, 0) },
++        { "N25Q128A13E", INFO(0x20ba18, 0, 64 * 1024,  256, 0) },
++        { "MX25L12835F", INFO(0xc22018, 0, 64 * 1024,  256, 0) },
+ 	{ "mx25l6405d",  INFO(0xc22017, 0, 64 * 1024, 128, 0) },
+ 	{ "mx25l12805d", INFO(0xc22018, 0, 64 * 1024, 256, 0) },
+ 	{ "mx25l12855e", INFO(0xc22618, 0, 64 * 1024, 256, 0) },
