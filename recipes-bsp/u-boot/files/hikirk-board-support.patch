@@ -1,18 +1,3 @@
-From 32b82a2481475a8fc9d3170e00ba1624a2f06cb3 Mon Sep 17 00:00:00 2001
-From: Angelika Tobisch <tobisch@dresearch-fe.de>
-Date: Tue, 29 Jan 2013 16:57:49 +0100
-Subject: [PATCH] hikirk: add hikirk board
-
-Add support for the hikirk board.
-
-Signed-off-by: Angelika Tobisch <tobisch@dresearch-fe.de>
-Signed-off-by: Mario Schuknecht <schuknecht@dresearch-fe.de>
----
- board/Marvell/openrd/openrd.c |   19 +++++++++++++++++--
- boards.cfg                    |    1 +
- include/configs/openrd.h      |   12 +++++++++++-
- 3 files changed, 29 insertions(+), 3 deletions(-)
-
 diff --git a/board/Marvell/openrd/openrd.c b/board/Marvell/openrd/openrd.c
 index 2a10e69..e7ecb05 100644
 --- a/board/Marvell/openrd/openrd.c
@@ -85,7 +70,7 @@ index 3cf75c3..1d5d47e 100644
  openrd_client                arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_CLIENT
  openrd_ultimate              arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_ULTIMATE
 diff --git a/include/configs/openrd.h b/include/configs/openrd.h
-index 53bafe1..aded84d 100644
+index 53bafe1..c7a9362 100644
 --- a/include/configs/openrd.h
 +++ b/include/configs/openrd.h
 @@ -33,6 +33,9 @@
@@ -93,25 +78,26 @@ index 53bafe1..aded84d 100644
   * Version number information
   */
 +#ifdef CONFIG_BOARD_IS_HIKIRK
-+# define CONFIG_IDENT_STRING	"\nhikirk"
++# define CONFIG_IDENT_STRING   "\nhikirk"
 +#else
  #ifdef CONFIG_BOARD_IS_OPENRD_ULTIMATE
- # define CONFIG_IDENT_STRING	"\nOpenRD-Ultimate"
+ # define CONFIG_IDENT_STRING   "\nOpenRD-Ultimate"
  #else
 @@ -46,6 +49,7 @@
  #  endif
  # endif
  #endif
 +#endif
- 
+
  /*
   * High Level Configuration Options (easy to change)
-@@ -65,7 +69,13 @@
+@@ -65,7 +69,14 @@
  #define CONFIG_CMD_DHCP
  #define CONFIG_CMD_ENV
  #define CONFIG_CMD_MII
 +#ifdef CONFIG_BOARD_IS_HIKIRK
 +#define CONFIG_SPI_FLASH_MACRONIX
++#define CONFIG_SPI_FLASH_STMICRO
 +#define CONFIG_CMD_SPI
 +#define CONFIG_CMD_SF
 +#else
@@ -120,15 +106,39 @@ index 53bafe1..aded84d 100644
  #define CONFIG_CMD_PING
  #define CONFIG_CMD_USB
  #define CONFIG_CMD_IDE
-@@ -122,7 +132,7 @@
+@@ -82,16 +93,22 @@
+ #ifdef CONFIG_CMD_NAND
+ #define CONFIG_ENV_IS_IN_NAND          1
+ #define CONFIG_ENV_SECT_SIZE           0x20000 /* 128K */
+-#else
+-#define CONFIG_ENV_IS_NOWHERE          1       /* if env in SDRAM */
+-#endif
+ /*
+  * max 4k env size is enough, but in case of nand
+  * it has to be rounded to sector size
+  */
+ #define CONFIG_ENV_SIZE                        0x20000 /* 128k */
+-#define CONFIG_ENV_ADDR                        0x60000
+ #define CONFIG_ENV_OFFSET              0x60000 /* env starts here */
++#define CONFIG_ENV_ADDR                 0x60000
++#else
++#define CONFIG_ENV_IS_IN_SPI_FLASH
++#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
++#define CONFIG_ENV_OFFSET              0x1d0000
++#define CONFIG_ENV_OFFSET_REDUND       0x1e0000
++#define CONFIG_ENV_SIZE                0x10000
++#define CONFIG_ENV_SIZE_REDUND         (CONFIG_ENV_SIZE)
++#define CONFIG_ENV_SECT_SIZE           (CONFIG_ENV_SIZE)
++#endif
+
+ /*
+  * Default environment variables
+@@ -122,7 +139,7 @@
  # else
- #  define CONFIG_MVGBE_PORTS	{1, 1}	/* enable both ports */
+ #  define CONFIG_MVGBE_PORTS   {1, 1}  /* enable both ports */
  # endif
 -# ifdef CONFIG_BOARD_IS_OPENRD_ULTIMATE
 +# if defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE) || defined(CONFIG_BOARD_IS_HIKIRK)
- #  define CONFIG_PHY_BASE_ADR	0x0
- #  define PHY_NO		"88E1121"
+ #  define CONFIG_PHY_BASE_ADR  0x0
+ #  define PHY_NO               "88E1121"
  # else
--- 
-1.7.9.5
-
