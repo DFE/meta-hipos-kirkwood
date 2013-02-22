@@ -24,18 +24,18 @@ index 7e99c3f..a8f026d 100644
 +        },
 +	{
 +                .name = "u-boot-0",
-+                .size = 950272,
++                .size = 917504,
 +                .offset = 65536,
 +        },
 +	{
 +                .name = "u-boot-1",
-+                .size = 950272,
-+                .offset = 1015808,
++                .size = 917504,
++                .offset = 983040,
 +        },
 +	{
 +                .name = "u-boot-env",
-+                .size = 131072,
-+                .offset = 1966080,
++                .size = 196608,
++                .offset = 1900544,
 +        },
 +	{
 +                .name = "kernel-0",
