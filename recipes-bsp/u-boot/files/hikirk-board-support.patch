@@ -78,17 +78,17 @@ index 53bafe1..c7a9362 100644
   * Version number information
   */
 +#ifdef CONFIG_BOARD_IS_HIKIRK
-+# define CONFIG_IDENT_STRING   "\nhikirk"
++# define CONFIG_IDENT_STRING	"\nhikirk"
 +#else
  #ifdef CONFIG_BOARD_IS_OPENRD_ULTIMATE
- # define CONFIG_IDENT_STRING   "\nOpenRD-Ultimate"
+ # define CONFIG_IDENT_STRING	"\nOpenRD-Ultimate"
  #else
 @@ -46,6 +49,7 @@
  #  endif
  # endif
  #endif
 +#endif
-
+ 
  /*
   * High Level Configuration Options (easy to change)
 @@ -65,7 +69,14 @@
@@ -108,37 +108,37 @@ index 53bafe1..c7a9362 100644
  #define CONFIG_CMD_IDE
 @@ -82,16 +93,22 @@
  #ifdef CONFIG_CMD_NAND
- #define CONFIG_ENV_IS_IN_NAND          1
- #define CONFIG_ENV_SECT_SIZE           0x20000 /* 128K */
+ #define CONFIG_ENV_IS_IN_NAND		1
+ #define CONFIG_ENV_SECT_SIZE		0x20000	/* 128K */
 -#else
--#define CONFIG_ENV_IS_NOWHERE          1       /* if env in SDRAM */
+-#define CONFIG_ENV_IS_NOWHERE		1	/* if env in SDRAM */
 -#endif
  /*
   * max 4k env size is enough, but in case of nand
   * it has to be rounded to sector size
   */
- #define CONFIG_ENV_SIZE                        0x20000 /* 128k */
--#define CONFIG_ENV_ADDR                        0x60000
- #define CONFIG_ENV_OFFSET              0x60000 /* env starts here */
+ #define CONFIG_ENV_SIZE			0x20000	/* 128k */
+-#define CONFIG_ENV_ADDR			0x60000
+ #define CONFIG_ENV_OFFSET		0x60000	/* env starts here */
 +#define CONFIG_ENV_ADDR                 0x60000
 +#else
 +#define CONFIG_ENV_IS_IN_SPI_FLASH
 +#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
-+#define CONFIG_ENV_OFFSET              0x1d0000
-+#define CONFIG_ENV_OFFSET_REDUND       0x1e0000
-+#define CONFIG_ENV_SIZE                0x10000
-+#define CONFIG_ENV_SIZE_REDUND         (CONFIG_ENV_SIZE)
-+#define CONFIG_ENV_SECT_SIZE           (CONFIG_ENV_SIZE)
++#define CONFIG_ENV_OFFSET       	0x1d0000
++#define CONFIG_ENV_OFFSET_REDUND	0x1e0000
++#define CONFIG_ENV_SIZE         	0x10000
++#define CONFIG_ENV_SIZE_REDUND		(CONFIG_ENV_SIZE)
++#define CONFIG_ENV_SECT_SIZE    	(CONFIG_ENV_SIZE)
 +#endif
-
+ 
  /*
   * Default environment variables
 @@ -122,7 +139,7 @@
  # else
- #  define CONFIG_MVGBE_PORTS   {1, 1}  /* enable both ports */
+ #  define CONFIG_MVGBE_PORTS	{1, 1}	/* enable both ports */
  # endif
 -# ifdef CONFIG_BOARD_IS_OPENRD_ULTIMATE
 +# if defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE) || defined(CONFIG_BOARD_IS_HIKIRK)
- #  define CONFIG_PHY_BASE_ADR  0x0
- #  define PHY_NO               "88E1121"
+ #  define CONFIG_PHY_BASE_ADR	0x0
+ #  define PHY_NO		"88E1121"
  # else
