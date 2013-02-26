@@ -12,7 +12,7 @@ index 7e99c3f..a8f026d 100644
  static struct mtd_partition openrd_nand_parts[] = {
  	{
  		.name		= "u-boot",
-@@ -41,6 +44,66 @@ static struct mtd_partition openrd_nand_parts[] = {
+@@ -41,6 +49,71 @@ static struct mtd_partition openrd_nand_parts[] = {
  	},
  };
  
@@ -34,8 +34,13 @@ index 7e99c3f..a8f026d 100644
 +        },
 +	{
 +                .name = "u-boot-env",
-+                .size = 196608,
++                .size = 131072,
 +                .offset = 1900544,
++        },
++       {
++                .name = "spare",
++                .size = 65536,
++                .offset = 2031616,
 +        },
 +	{
 +                .name = "kernel-0",
@@ -54,7 +59,7 @@ index 7e99c3f..a8f026d 100644
 +        .type           = "N25Q128A13E",
 +        .name           = "spi_flash",
 +        .parts          = spi_flash_parts,
-+        .nr_parts       = 6,
++        .nr_parts       = 7,
 +};  
 +
 +static struct spi_board_info __initdata spi_slave_info[] = {
