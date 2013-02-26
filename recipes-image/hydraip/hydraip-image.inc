@@ -2,7 +2,7 @@
 
 require recipes-images/angstrom/systemd-image.bb
 
-PR_append = "+r27"
+PR_append = "+r28"
 
 IMAGE_FEATURES += " package-management "
 
@@ -12,6 +12,7 @@ IMAGE_INSTALL += "          \
   bash                      \
   bootconfig                \
   healthy                   \
+  u-boot-fw-utils           \
 "
 
 # profiling
