@@ -3,8 +3,8 @@ DESCRIPTION = "hydraip rootfs pkg"
 LICENSE = "GPLv2"
 
 DEPENDS = "hydraip-image"
-RDEPENDS = "mtd-utils"
-RRECOMMENDS = "kernel"
+RDEPENDS_${PN} = "mtd-utils"
+RRECOMMENDS_${PN} = "kernel"
 
 PACKAGES = "${PN}"
 PR = "r7"
