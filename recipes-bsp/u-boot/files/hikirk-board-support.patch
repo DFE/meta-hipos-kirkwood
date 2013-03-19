@@ -5,7 +5,7 @@ index 2a10e69..e7ecb05 100644
 @@ -49,12 +49,21 @@ int board_early_init_f(void)
  
  	/* Multi-Purpose Pins Functionality configuration */
- 	u32 kwmpp_config[] = {
+ 	static const u32 kwmpp_config[] = {
 +#ifdef CONFIG_BOARD_IS_HIKIRK
 +		MPP0_SPI_SCn,
 +		MPP1_SPI_MOSI,
