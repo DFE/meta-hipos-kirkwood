@@ -1,6 +1,6 @@
 # Use latest yocto kernel
 
-COMPATIBLE_MACHINE = "hidav-kirkwood"
+COMPATIBLE_MACHINE = "hipos-kirkwood"
 
 DEPENDS += " lzop-native test-harness-native "
 RDEPENDS_${PN} += " mtd-utils gawk busybox bootconfig "

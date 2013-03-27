@@ -1,3 +1,3 @@
 
-DEFAULT_PREFERENCE_hidav-kirkwood = "-1"
+DEFAULT_PREFERENCE_hipos-kirkwood = "-1"
 

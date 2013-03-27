@@ -1,6 +1,6 @@
 require recipes-bsp/u-boot/u-boot_2013.01.01.bb
 
-COMPATIBLE_MACHINE = "hidav-kirkwood"
+COMPATIBLE_MACHINE = "hipos-kirkwood"
 
 SRC_URI +=  " file://kwbimage_hikirk_533ddr3_nand.cfg \
 	      file://kwbimage_hikirk_533ddr3_uart.cfg \
@@ -9,7 +9,7 @@ SRC_URI +=  " file://kwbimage_hikirk_533ddr3_nand.cfg \
 	      file://hikirk-board-support.patch \
 	    "
 
-do_compile_append_hidav-kirkwood () {
+do_compile_append_hipos-kirkwood () {
 	for kwcfg in ${WORKDIR}/kwbimage_hikirk_*.cfg
 	do
 		KW_BOOT_TYPE=${kwcfg##*kwbimage_hikirk_}
@@ -18,11 +18,11 @@ do_compile_append_hidav-kirkwood () {
 	done
 }
 
-do_install_append_hidav-kirkwood () {
+do_install_append_hipos-kirkwood () {
 	install ${S}/u-boot_hikirk_*.bin ${D}/boot/
 }
 
-do_deploy_append_hidav-kirkwood () {
+do_deploy_append_hipos-kirkwood () {
 	rm -f ${DEPLOYDIR}/u-boot_hikirk_*.bin
 	install ${S}/u-boot_hikirk_*.bin ${DEPLOYDIR}/
 }
