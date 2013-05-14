@@ -2,10 +2,14 @@ require recipes-bsp/u-boot/u-boot_2013.01.01.bb
 
 COMPATIBLE_MACHINE = "hipos-kirkwood"
 
+
 SRC_URI +=  " file://kwbimage_hikirk_533ddr3_nand.cfg \
 	      file://kwbimage_hikirk_533ddr3_uart.cfg \
 	      file://kwbimage_hikirk_533ddr3_sata.cfg \
 	      file://kwbimage_hikirk_533ddr3_spi.cfg \
+	      file://kwbimage_hikirk_500ddr3_uart.cfg \
+	      file://kwbimage_hikirk_500ddr3_sata.cfg \
+	      file://kwbimage_hikirk_500ddr3_spi.cfg \
 	      file://hikirk-board-support.patch \
 	    "
 
