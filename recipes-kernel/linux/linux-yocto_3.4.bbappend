@@ -5,13 +5,14 @@ COMPATIBLE_MACHINE = "hipos-kirkwood"
 DEPENDS += " lzop-native test-harness-native "
 RDEPENDS_${PN} += " mtd-utils gawk busybox bootconfig "
 
-MACHINE_KERNEL_PR = "r14"
+MACHINE_KERNEL_PR = "r15"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI +=  " file://defconfig \
 	      file://xor-min-byte-count.patch \
               file://spi-enable.patch \
 	      file://PLX-Tech-3380-driver.patch \
+	      file://mpp_host_hdd_bctrl.patch \
 	    "
 
 do_configure_prepend() {
