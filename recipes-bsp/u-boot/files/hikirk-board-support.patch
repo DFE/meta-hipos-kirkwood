@@ -1,8 +1,24 @@
+From 7f1ced54648e344fa7dbf16fa092ab66b61311fb Mon Sep 17 00:00:00 2001
+From: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
+Date: Fri, 31 May 2013 12:00:10 +0200
+Subject: [PATCH] hikirk: add hikirk board
+
+Add support for the hikirk board.
+
+Signed-off-by: Angelika Tobisch <tobisch@dresearch-fe.de>
+Signed-off-by: Eik Binschek <binschek@dresearch-fe.de>
+Signed-off-by: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
+---
+ board/Marvell/openrd/openrd.c |   31 +++++++++++++++++++++++++++++--
+ boards.cfg                    |    1 +
+ include/configs/openrd.h      |   25 +++++++++++++++++++++----
+ 3 files changed, 51 insertions(+), 6 deletions(-)
+
 diff --git a/board/Marvell/openrd/openrd.c b/board/Marvell/openrd/openrd.c
-index 2a10e69..e7ecb05 100644
+index c59a326..1c57ef9 100644
 --- a/board/Marvell/openrd/openrd.c
 +++ b/board/Marvell/openrd/openrd.c
-@@ -49,12 +49,21 @@ int board_early_init_f(void)
+@@ -49,26 +49,45 @@ int board_early_init_f(void)
  
  	/* Multi-Purpose Pins Functionality configuration */
  	static const u32 kwmpp_config[] = {
@@ -11,8 +27,8 @@ index 2a10e69..e7ecb05 100644
 +		MPP1_SPI_MOSI,
 +		MPP2_SPI_SCK,
 +		MPP3_SPI_MISO,
-+		MPP4_GPIO,
-+		MPP5_GPO,
++		MPP4_UART0_RXD,
++		MPP5_UART0_TXD,
 +#else
  		MPP0_NF_IO2,
  		MPP1_NF_IO3,
@@ -24,7 +40,17 @@ index 2a10e69..e7ecb05 100644
  		MPP6_SYSRST_OUTn,
  		MPP7_GPO,
  		MPP8_TW_SDA,
-@@ -67,8 +76,13 @@ int board_early_init_f(void)
+ 		MPP9_TW_SCK,
++#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP10_GPO,
++		MPP11_GPIO,
++#else
+ 		MPP10_UART0_TXD,
+ 		MPP11_UART0_RXD,
++#endif
+ 		MPP12_SD_CLK,
+ 		MPP13_SD_CMD, /* Alt UART1_TXD */
+ 		MPP14_SD_D0,  /* Alt UART1_RXD */
  		MPP15_SD_D1,
  		MPP16_SD_D2,
  		MPP17_SD_D3,
@@ -38,7 +64,25 @@ index 2a10e69..e7ecb05 100644
  		MPP20_GE1_0,
  		MPP21_GE1_1,
  		MPP22_GE1_2,
-@@ -115,7 +129,7 @@ int board_init(void)
+@@ -84,10 +103,17 @@ int board_early_init_f(void)
+ 		MPP32_GE1_12,
+ 		MPP33_GE1_13,
+ 		MPP34_GPIO,   /* UART1 / SD sel */
++#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP35_GPIO,
++		MPP36_GPIO,
++		MPP37_GPIO,
++		MPP38_GPIO,
++#else
+ 		MPP35_TDM_CH0_TX_QL,
+ 		MPP36_TDM_SPI_CS1,
+ 		MPP37_TDM_CH2_TX_QL,
+ 		MPP38_TDM_CH2_RX_QL,
++#endif
+ 		MPP39_AUDIO_I2SBCLK,
+ 		MPP40_AUDIO_I2SDO,
+ 		MPP41_AUDIO_I2SLRC,
+@@ -115,7 +141,7 @@ int board_init(void)
  	gd->bd->bi_arch_number = MACH_TYPE_OPENRD_BASE;
  #elif defined(CONFIG_BOARD_IS_OPENRD_CLIENT)
  	gd->bd->bi_arch_number = MACH_TYPE_OPENRD_CLIENT;
@@ -47,7 +91,7 @@ index 2a10e69..e7ecb05 100644
  	gd->bd->bi_arch_number = MACH_TYPE_OPENRD_ULTIMATE;
  #endif
  
-@@ -169,7 +183,8 @@ void reset_phy(void)
+@@ -169,7 +195,8 @@ void reset_phy(void)
  #endif
  
  #if defined(CONFIG_BOARD_IS_OPENRD_CLIENT) || \
@@ -58,10 +102,10 @@ index 2a10e69..e7ecb05 100644
  	mv_phy_init("egiga1");
  #endif
 diff --git a/boards.cfg b/boards.cfg
-index 3cf75c3..1d5d47e 100644
+index ee68fdd..80430da 100644
 --- a/boards.cfg
 +++ b/boards.cfg
-@@ -148,6 +148,7 @@ netspace_v2                  arm         arm926ejs   netspace_v2         LaCie
+@@ -177,6 +177,7 @@ wireless_space               arm         arm926ejs   wireless_space      LaCie
  dreamplug                    arm         arm926ejs   -                   Marvell        kirkwood
  guruplug                     arm         arm926ejs   -                   Marvell        kirkwood
  mv88f6281gtw_ge              arm         arm926ejs   -                   Marvell        kirkwood
@@ -70,7 +114,7 @@ index 3cf75c3..1d5d47e 100644
  openrd_client                arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_CLIENT
  openrd_ultimate              arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_ULTIMATE
 diff --git a/include/configs/openrd.h b/include/configs/openrd.h
-index 53bafe1..c7a9362 100644
+index 53bafe1..ba171c5 100644
 --- a/include/configs/openrd.h
 +++ b/include/configs/openrd.h
 @@ -33,6 +33,9 @@
@@ -106,7 +150,7 @@ index 53bafe1..c7a9362 100644
  #define CONFIG_CMD_PING
  #define CONFIG_CMD_USB
  #define CONFIG_CMD_IDE
-@@ -82,16 +93,22 @@
+@@ -82,9 +93,6 @@
  #ifdef CONFIG_CMD_NAND
  #define CONFIG_ENV_IS_IN_NAND		1
  #define CONFIG_ENV_SECT_SIZE		0x20000	/* 128K */
@@ -116,11 +160,10 @@ index 53bafe1..c7a9362 100644
  /*
   * max 4k env size is enough, but in case of nand
   * it has to be rounded to sector size
-  */
+@@ -92,6 +100,15 @@
  #define CONFIG_ENV_SIZE			0x20000	/* 128k */
--#define CONFIG_ENV_ADDR			0x60000
+ #define CONFIG_ENV_ADDR			0x60000
  #define CONFIG_ENV_OFFSET		0x60000	/* env starts here */
-+#define CONFIG_ENV_ADDR                 0x60000
 +#else
 +#define CONFIG_ENV_IS_IN_SPI_FLASH
 +#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
@@ -142,3 +185,6 @@ index 53bafe1..c7a9362 100644
  #  define CONFIG_PHY_BASE_ADR	0x0
  #  define PHY_NO		"88E1121"
  # else
+-- 
+1.7.9.5
+
