@@ -1,0 +1,39 @@
+diff --git a/common/cmd_sf.c b/common/cmd_sf.c
+index b175358..2644ab9 100644
+--- a/common/cmd_sf.c
++++ b/common/cmd_sf.c
+@@ -13,7 +13,7 @@
+ #include <asm/io.h>
+ 
+ #ifndef CONFIG_SF_DEFAULT_SPEED
+-# define CONFIG_SF_DEFAULT_SPEED	1000000
++# define CONFIG_SF_DEFAULT_SPEED	80000000
+ #endif
+ #ifndef CONFIG_SF_DEFAULT_MODE
+ # define CONFIG_SF_DEFAULT_MODE		SPI_MODE_3
+diff --git a/common/cmd_spi.c b/common/cmd_spi.c
+index eba5fb8..03da510 100644
+--- a/common/cmd_spi.c
++++ b/common/cmd_spi.c
+@@ -119,7 +119,7 @@ int do_spi (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
+ 		return 1;
+ 	}
+ 
+-	slave = spi_setup_slave(bus, cs, 1000000, mode);
++	slave = spi_setup_slave(bus, cs, 80000000, mode);
+ 	if (!slave) {
+ 		printf("Invalid device %d:%d\n", bus, cs);
+ 		return 1;
+diff --git a/common/env_sf.c b/common/env_sf.c
+index d9e9085..9e23d64 100644
+--- a/common/env_sf.c
++++ b/common/env_sf.c
+@@ -39,7 +39,7 @@
+ # define CONFIG_ENV_SPI_CS	0
+ #endif
+ #ifndef CONFIG_ENV_SPI_MAX_HZ
+-# define CONFIG_ENV_SPI_MAX_HZ	1000000
++# define CONFIG_ENV_SPI_MAX_HZ	80000000
+ #endif
+ #ifndef CONFIG_ENV_SPI_MODE
+ # define CONFIG_ENV_SPI_MODE	SPI_MODE_3

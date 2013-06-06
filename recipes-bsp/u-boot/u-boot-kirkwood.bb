@@ -11,6 +11,7 @@ SRC_URI +=  " file://kwbimage_hikirk_533ddr3_nand.cfg \
 	      file://kwbimage_hikirk_500ddr3_sata.cfg \
 	      file://kwbimage_hikirk_500ddr3_spi.cfg \
 	      file://hikirk-board-support.patch \
+              file://speed_up_spi.patch \
 	    "
 
 do_compile_append_hipos-kirkwood () {
