@@ -189,8 +189,8 @@ index 53bafe1..d7d46fe 100644
 +	"x_bootargsB=console=ttyS0,115200 vmalloc=50M rw root=/dev/mmcblk0p4 rootwait\0"	\
 +	"x_kernelA=sf read 0x2000000 0x200000 0x700000\0"	\
 +	"x_kernelB=sf read 0x2000000 0x900000 0x700000\0"	\
-+	"x_bootA=sf probe; ${x_kernelA}; setenv bootargs ${x_bootargsA} ${x_infoA}; bootm 0x2000000\0"	\
-+	"x_bootB=sf probe; ${x_kernelB}; setenv bootargs ${x_bootargsB} ${x_infoB}; bootm 0x2000000\0"
++	"x_bootA=sf probe; ${x_kernelA}; setenv bootargs ${x_bootargsA} ethaddr=${ethaddr} eth1addr=${eth1addr} ${x_infoA}; bootm 0x2000000\0"	\
++	"x_bootB=sf probe; ${x_kernelB}; setenv bootargs ${x_bootargsB} ethaddr=${ethaddr} eth1addr=${eth1addr} ${x_infoB}; bootm 0x2000000\0"
 +#else
  #define CONFIG_BOOTCOMMAND		"${x_bootcmd_kernel}; "	\
  	"setenv bootargs ${x_bootargs} ${x_bootargs_root}; "	\

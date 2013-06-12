@@ -13,6 +13,7 @@ SRC_URI +=  " file://defconfig \
               file://spi-enable.patch \
 	      file://PLX-Tech-3380-driver.patch \
 	      file://mpp_host_hdd_bctrl.patch \
+	      file://mac-address.patch \
 	    "
 
 do_configure_prepend() {
