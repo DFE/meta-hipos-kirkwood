@@ -1,6 +1,6 @@
 require hydraip-image.inc
 
-PR_append = ".5"
+PR_append = ".6"
 
 export IMAGE_BASENAME = "hydraip-devimage"
 
@@ -16,5 +16,6 @@ IMAGE_INSTALL += " \
   git \
 "
 
-# DNS: deactivated temporary on build issues
-#IMAGE_INSTALL += "openjdk-6-jdk"
+# utils 
+IMAGE_INSTALL += "mmc-utils"
+
