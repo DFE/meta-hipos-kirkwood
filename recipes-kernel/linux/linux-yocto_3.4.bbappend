@@ -15,7 +15,7 @@ SRC_URI +=  " file://defconfig \
 	      file://mpp_host_hdd_bctrl.patch \
 	      file://mac-address.patch \
 	      file://hikirk_power_off.patch \
-	      git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.4" \
+	      git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.5" \
 	    "
 # The parameter 'type' in a git-SRC_URI is a workaround. The error is in file
 # openembedded-core/meta/classes/kernel-yocto.bbclass in function find_kernel_feature_dirs.
