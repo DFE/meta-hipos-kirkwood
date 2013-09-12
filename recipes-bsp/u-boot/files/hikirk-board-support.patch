@@ -1,6 +1,6 @@
-From d9e8a4419f7cc24978a404116bd3cf02d2c8b0aa Mon Sep 17 00:00:00 2001
+From 478ebff1c68fbce7eb9c00799e09563da1c3bd3e Mon Sep 17 00:00:00 2001
 From: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
-Date: Tue, 27 Aug 2013 11:14:57 +0200
+Date: Thu, 12 Sep 2013 10:33:13 +0200
 Subject: [PATCH] hikirk: add hikirk board
 
 Add support for hikirk board.
@@ -9,13 +9,13 @@ Signed-off-by: Angelika Tobisch <tobisch@dresearch-fe.de>
 Signed-off-by: Eik Binschek <binschek@dresearch-fe.de>
 Signed-off-by: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
 ---
- board/Marvell/openrd/openrd.c |   28 +++++++++++++++++++++++-
+ board/Marvell/openrd/openrd.c |   69 +++++++++++++++++++++++++++++++++++++++--
  boards.cfg                    |    1 +
- include/configs/openrd.h      |   48 ++++++++++++++++++++++++++++++++++++-----
- 3 files changed, 71 insertions(+), 6 deletions(-)
+ include/configs/openrd.h      |   47 +++++++++++++++++++++++++---
+ 3 files changed, 109 insertions(+), 8 deletions(-)
 
 diff --git a/board/Marvell/openrd/openrd.c b/board/Marvell/openrd/openrd.c
-index c59a326..43ec0ba 100644
+index c59a326..01962e0 100644
 --- a/board/Marvell/openrd/openrd.c
 +++ b/board/Marvell/openrd/openrd.c
 @@ -49,26 +49,45 @@ int board_early_init_f(void)
@@ -91,6 +91,68 @@ index c59a326..43ec0ba 100644
  	gd->bd->bi_arch_number = MACH_TYPE_OPENRD_ULTIMATE;
  #endif
  
+@@ -125,6 +151,42 @@ int board_init(void)
+ }
+ 
+ #ifdef CONFIG_RESET_PHY_R
++#ifdef CONFIG_BOARD_IS_HIKIRK
++#define KSZ9031RNX_MMD_CTRL_REG 0xd
++#define KSZ9031RNX_MMD_DATA_REG 0xe
++/* Configure and enable MV88E1116/88E1121 PHY */
++void mv_phy_init(char *name)
++{
++	u16 reg;
++	u16 devadr;
++
++	if (miiphy_set_current_dev(name))
++		return;
++
++	/* command to read PHY dev address */
++	if (miiphy_read(name, 0xEE, 0xEE, (u16 *) &devadr)) {
++		printf("Err..%s could not read PHY dev address\n",
++			__FUNCTION__);
++		return;
++	}
++
++	/*
++	 * Enable RGMII delay on rx clock
++	 * Ref: sec RGMII Pad Skew Registers of chip datasheet
++	 */
++	miiphy_write(name, devadr, KSZ9031RNX_MMD_CTRL_REG, 0x2);
++	miiphy_write(name, devadr, KSZ9031RNX_MMD_DATA_REG, 0x8);
++	miiphy_write(name, devadr, KSZ9031RNX_MMD_CTRL_REG, 0x4002);
++
++	miiphy_read(name,  devadr, KSZ9031RNX_MMD_DATA_REG, &reg);
++	miiphy_write(name, devadr, KSZ9031RNX_MMD_DATA_REG, reg | 0x1F);
++
++	/* reset the phy */
++	miiphy_reset(name, devadr);
++
++	printf("KSZ9031RNX Initialized on %s\n", name);
++}
++#else
+ /* Configure and enable MV88E1116/88E1121 PHY */
+ void mv_phy_init(char *name)
+ {
+@@ -156,7 +218,7 @@ void mv_phy_init(char *name)
+ 
+ 	printf(PHY_NO" Initialized on %s\n", name);
+ }
+-
++#endif
+ void reset_phy(void)
+ {
+ 	mv_phy_init("egiga0");
+@@ -169,7 +231,8 @@ void reset_phy(void)
+ #endif
+ 
+ #if defined(CONFIG_BOARD_IS_OPENRD_CLIENT) || \
+-	defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE)
++	defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE) || \
++	defined(CONFIG_BOARD_IS_HIKIRK)
+ 	/* configure and initialize both PHY's */
+ 	mv_phy_init("egiga1");
+ #endif
 diff --git a/boards.cfg b/boards.cfg
 index e4b0d44..ea83a5d 100644
 --- a/boards.cfg
@@ -104,7 +166,7 @@ index e4b0d44..ea83a5d 100644
  openrd_client                arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_CLIENT
  openrd_ultimate              arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_ULTIMATE
 diff --git a/include/configs/openrd.h b/include/configs/openrd.h
-index 53bafe1..71127af 100644
+index 53bafe1..6ef484b 100644
 --- a/include/configs/openrd.h
 +++ b/include/configs/openrd.h
 @@ -33,6 +33,9 @@
@@ -193,7 +255,7 @@ index 53bafe1..71127af 100644
  
  /*
   * Ethernet Driver configuration
-@@ -126,8 +159,13 @@
+@@ -126,8 +159,12 @@
  #  define CONFIG_PHY_BASE_ADR	0x0
  #  define PHY_NO		"88E1121"
  # else
@@ -201,7 +263,6 @@ index 53bafe1..71127af 100644
 -#  define PHY_NO		"88E1116"
 +#  ifdef CONFIG_BOARD_IS_HIKIRK
 +#   define CONFIG_PHY_BASE_ADR	0x0
-+#   undef CONFIG_RESET_PHY_R
 +#  else
 +#   define CONFIG_PHY_BASE_ADR	0x8
 +#   define PHY_NO		"88E1116"
