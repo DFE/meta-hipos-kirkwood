@@ -1,6 +1,6 @@
 # Use latest yocto kernel
 
-COMPATIBLE_MACHINE = "hipos-kirkwood"
+COMPATIBLE_MACHINE = "hikirk"
 
 DEPENDS += " lzop-native test-harness-native "
 RDEPENDS_${PN} += " mtd-utils gawk busybox bootconfig "
@@ -8,15 +8,18 @@ RDEPENDS_${PN} += " mtd-utils gawk busybox bootconfig "
 MACHINE_KERNEL_PR = "r16"
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
-SRC_URI +=  " file://defconfig \
-	      file://xor-min-byte-count.patch \
-              file://spi-enable.patch \
-	      file://PLX-Tech-3380-driver.patch \
-	      file://mpp_host_hdd_bctrl.patch \
-	      file://mac-address.patch \
-	      file://hikirk_power_off.patch \
-	      git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.5" \
-	    "
+SRC_URI_append_hikirk =  " \
+	file://hikirk-setup.patch \
+	file://m25p80-driver.patch \
+	file://defconfig \
+"
+
+SRC_URI +=  " \
+	file://xor-min-byte-count.patch \
+	file://PLX-Tech-3380-driver.patch \
+	git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.5" \
+"
+
 # The parameter 'type' in a git-SRC_URI is a workaround. The error is in file
 # openembedded-core/meta/classes/kernel-yocto.bbclass in function find_kernel_feature_dirs.
 # If the parameter is missing, then an exception is thrown. Parameter 'type'
@@ -25,7 +28,7 @@ SRC_URI +=  " file://defconfig \
 
 do_configure_prepend() {
 	# The defconfig has been copied by oe-framework. Since last (2013-03)
-	# oe layer update, it is not coopied into the build directory. The 
+	# oe layer update, it is not copied into the build directory. The 
 	# cause is unknown. As long as it does not work, it is copied here.
 	cp ${WORKDIR}/defconfig ${B}/.config
 }

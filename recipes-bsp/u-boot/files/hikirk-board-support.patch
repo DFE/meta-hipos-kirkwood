@@ -1,101 +1,246 @@
-From 478ebff1c68fbce7eb9c00799e09563da1c3bd3e Mon Sep 17 00:00:00 2001
-From: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
-Date: Thu, 12 Sep 2013 10:33:13 +0200
+From 039cdc1db80cd19fe6b4098af567610ba6c686f1 Mon Sep 17 00:00:00 2001
+From: Angelika Tobisch <tobisch@dresearch-fe.de>
+Date: Wed, 25 Sep 2013 15:54:43 +0200
 Subject: [PATCH] hikirk: add hikirk board
 
 Add support for hikirk board.
 
-Signed-off-by: Angelika Tobisch <tobisch@dresearch-fe.de>
-Signed-off-by: Eik Binschek <binschek@dresearch-fe.de>
-Signed-off-by: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
----
- board/Marvell/openrd/openrd.c |   69 +++++++++++++++++++++++++++++++++++++++--
- boards.cfg                    |    1 +
- include/configs/openrd.h      |   47 +++++++++++++++++++++++++---
- 3 files changed, 109 insertions(+), 8 deletions(-)
+HYP-7326
 
-diff --git a/board/Marvell/openrd/openrd.c b/board/Marvell/openrd/openrd.c
-index c59a326..01962e0 100644
---- a/board/Marvell/openrd/openrd.c
-+++ b/board/Marvell/openrd/openrd.c
-@@ -49,26 +49,45 @@ int board_early_init_f(void)
+Signed-off-by: Angelika Tobisch <tobisch@dresearch-fe.de>
+---
+ arch/arm/include/asm/mach-types.h |   13 +++
+ board/Marvell/hikirk/Makefile     |   51 +++++++++++
+ board/Marvell/hikirk/hikirk.c     |  170 +++++++++++++++++++++++++++++++++++++
+ boards.cfg                        |    1 +
+ include/configs/hikirk.h          |  127 +++++++++++++++++++++++++++
+ 5 files changed, 362 insertions(+)
+ create mode 100644 board/Marvell/hikirk/Makefile
+ create mode 100644 board/Marvell/hikirk/hikirk.c
+ create mode 100644 include/configs/hikirk.h
+
+diff --git a/arch/arm/include/asm/mach-types.h b/arch/arm/include/asm/mach-types.h
+index a676b6d..a34b34d 100644
+--- a/arch/arm/include/asm/mach-types.h
++++ b/arch/arm/include/asm/mach-types.h
+@@ -1107,6 +1107,7 @@ extern unsigned int __machine_arch_type;
+ #define MACH_TYPE_OMAP5_SEVM           3777
+ #define MACH_TYPE_ARMADILLO_800EVA     3863
+ #define MACH_TYPE_KZM9G                4140
++#define MACH_TYPE_HIKIRK               4745
  
- 	/* Multi-Purpose Pins Functionality configuration */
- 	static const u32 kwmpp_config[] = {
-+#ifdef CONFIG_BOARD_IS_HIKIRK
+ #ifdef CONFIG_ARCH_EBSA110
+ # ifdef machine_arch_type
+@@ -14248,6 +14249,18 @@ extern unsigned int __machine_arch_type;
+ # define machine_is_kzm9g()	(0)
+ #endif
+ 
++#ifdef CONFIG_MACH_HIKIRK
++# ifdef machine_arch_type
++#  undef machine_arch_type
++#  define machine_arch_type __machine_arch_type
++# else
++#  define machine_arch_type MACH_TYPE_HIKIRK
++# endif
++# define machine_is_hikirk()	(machine_arch_type == MACH_TYPE_HIKIRK)
++#else
++# define machine_is_hikirk()	(0)
++#endif
++
+ /*
+  * These have not yet been registered
+  */
+diff --git a/board/Marvell/hikirk/Makefile b/board/Marvell/hikirk/Makefile
+new file mode 100644
+index 0000000..5856e26
+--- /dev/null
++++ b/board/Marvell/hikirk/Makefile
+@@ -0,0 +1,51 @@
++#
++# Based on openrd:
++# (C) Copyright 2009
++# Net Insight <www.netinsight.net>
++# Written-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
++#
++# Based on sheevaplug:
++# (C) Copyright 2009
++# Marvell Semiconductor <www.marvell.com>
++# Written-by: Prafulla Wadaskar <prafulla@marvell.com>
++#
++# See file CREDITS for list of people who contributed to this
++# project.
++#
++# This program is free software; you can redistribute it and/or
++# modify it under the terms of the GNU General Public License as
++# published by the Free Software Foundation; either version 2 of
++# the License, or (at your option) any later version.
++#
++# This program is distributed in the hope that it will be useful,
++# but WITHOUT ANY WARRANTY; without even the implied warranty of
++# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
++# GNU General Public License for more details.
++#
++# You should have received a copy of the GNU General Public License
++# along with this program; if not, write to the Free Software
++# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
++# MA 02110-1301 USA
++#
++
++include $(TOPDIR)/config.mk
++
++LIB	= $(obj)lib$(BOARD).o
++
++COBJS	:= hikirk.o
++
++SRCS	:= $(SOBJS:.o=.S) $(COBJS:.o=.c)
++OBJS	:= $(addprefix $(obj),$(COBJS))
++SOBJS	:= $(addprefix $(obj),$(SOBJS))
++
++$(LIB):	$(obj).depend $(OBJS) $(SOBJS)
++	$(call cmd_link_o_target, $(OBJS) $(SOBJS))
++
++#########################################################################
++
++# defines $(obj).depend target
++include $(SRCTREE)/rules.mk
++
++sinclude $(obj).depend
++
++#########################################################################
+\ No newline at end of file
+diff --git a/board/Marvell/hikirk/hikirk.c b/board/Marvell/hikirk/hikirk.c
+new file mode 100644
+index 0000000..3d0b618
+--- /dev/null
++++ b/board/Marvell/hikirk/hikirk.c
+@@ -0,0 +1,170 @@
++/*
++ * Based on openrd.c:
++ * (C) Copyright 2009
++ * Net Insight <www.netinsight.net>
++ * Written-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
++ *
++ * Based on sheevaplug.c:
++ * (C) Copyright 2009
++ * Marvell Semiconductor <www.marvell.com>
++ * Written-by: Prafulla Wadaskar <prafulla@marvell.com>
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
++ * MA 02110-1301 USA
++ */
++
++#include <common.h>
++#include <miiphy.h>
++#include <asm/arch/cpu.h>
++#include <asm/arch/kirkwood.h>
++#include <asm/arch/mpp.h>
++
++#define HIKIRK_OE_LOW		(~(1<<28))        /* RS232 / RS485 */
++#define HIKIRK_OE_HIGH		(~(1<<2))         /* SD / UART1 */
++#define HIKIRK_OE_VAL_LOW		(0)       /* Sel RS232 */
++#define HIKIRK_OE_VAL_HIGH		(1 << 2)  /* Sel SD */
++
++DECLARE_GLOBAL_DATA_PTR;
++
++int board_early_init_f(void)
++{
++	/*
++	 * default gpio configuration
++	 * There are maximum 64 gpios controlled through 2 sets of registers
++	 * the  below configuration configures mainly initial LED status
++	 */
++	kw_config_gpio(HIKIRK_OE_VAL_LOW,
++			HIKIRK_OE_VAL_HIGH,
++			HIKIRK_OE_LOW, HIKIRK_OE_HIGH);
++
++	/* Multi-Purpose Pins Functionality configuration */
++	static const u32 kwmpp_config[] = {
 +		MPP0_SPI_SCn,
 +		MPP1_SPI_MOSI,
 +		MPP2_SPI_SCK,
 +		MPP3_SPI_MISO,
 +		MPP4_UART0_RXD,
 +		MPP5_UART0_TXD,
-+#else
- 		MPP0_NF_IO2,
- 		MPP1_NF_IO3,
- 		MPP2_NF_IO4,
- 		MPP3_NF_IO5,
- 		MPP4_NF_IO6,
- 		MPP5_NF_IO7,
-+#endif
- 		MPP6_SYSRST_OUTn,
- 		MPP7_GPO,
- 		MPP8_TW_SDA,
- 		MPP9_TW_SCK,
-+#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP6_SYSRST_OUTn,
++		MPP7_GPO,
++		MPP8_TW_SDA,
++		MPP9_TW_SCK,
 +		MPP10_GPO,
 +		MPP11_GPIO,
-+#else
- 		MPP10_UART0_TXD,
- 		MPP11_UART0_RXD,
-+#endif
- 		MPP12_SD_CLK,
- 		MPP13_SD_CMD, /* Alt UART1_TXD */
- 		MPP14_SD_D0,  /* Alt UART1_RXD */
- 		MPP15_SD_D1,
- 		MPP16_SD_D2,
- 		MPP17_SD_D3,
-+#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP12_SD_CLK,
++		MPP13_SD_CMD, /* Alt UART1_TXD */
++		MPP14_SD_D0,  /* Alt UART1_RXD */
++		MPP15_SD_D1,
++		MPP16_SD_D2,
++		MPP17_SD_D3,
 +		MPP18_GPO,
 +		MPP19_GPO,
-+#else
- 		MPP18_NF_IO0,
- 		MPP19_NF_IO1,
-+#endif
- 		MPP20_GE1_0,
- 		MPP21_GE1_1,
- 		MPP22_GE1_2,
-@@ -84,10 +103,17 @@ int board_early_init_f(void)
- 		MPP32_GE1_12,
- 		MPP33_GE1_13,
- 		MPP34_GPIO,   /* UART1 / SD sel */
-+#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP20_GE1_0,
++		MPP21_GE1_1,
++		MPP22_GE1_2,
++		MPP23_GE1_3,
++		MPP24_GE1_4,
++		MPP25_GE1_5,
++		MPP26_GE1_6,
++		MPP27_GE1_7,
++		MPP28_GPIO,
++		MPP29_TSMP9,
++		MPP30_GE1_10,
++		MPP31_GE1_11,
++		MPP32_GE1_12,
++		MPP33_GE1_13,
++		MPP34_GPIO,   /* UART1 / SD sel */
 +		MPP35_GPIO,
 +		MPP36_GPIO,
 +		MPP37_GPIO,
 +		MPP38_GPIO,
-+#else
- 		MPP35_TDM_CH0_TX_QL,
- 		MPP36_TDM_SPI_CS1,
- 		MPP37_TDM_CH2_TX_QL,
- 		MPP38_TDM_CH2_RX_QL,
-+#endif
- 		MPP39_AUDIO_I2SBCLK,
- 		MPP40_AUDIO_I2SDO,
- 		MPP41_AUDIO_I2SLRC,
-@@ -115,7 +141,7 @@ int board_init(void)
- 	gd->bd->bi_arch_number = MACH_TYPE_OPENRD_BASE;
- #elif defined(CONFIG_BOARD_IS_OPENRD_CLIENT)
- 	gd->bd->bi_arch_number = MACH_TYPE_OPENRD_CLIENT;
--#elif defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE)
-+#elif defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE) || defined(CONFIG_BOARD_IS_HIKIRK)
- 	gd->bd->bi_arch_number = MACH_TYPE_OPENRD_ULTIMATE;
- #endif
- 
-@@ -125,6 +151,42 @@ int board_init(void)
- }
- 
- #ifdef CONFIG_RESET_PHY_R
-+#ifdef CONFIG_BOARD_IS_HIKIRK
++		MPP39_AUDIO_I2SBCLK,
++		MPP40_AUDIO_I2SDO,
++		MPP41_AUDIO_I2SLRC,
++		MPP42_AUDIO_I2SMCLK,
++		MPP43_AUDIO_I2SDI,
++		MPP44_AUDIO_EXTCLK,
++		MPP45_TDM_PCLK,
++		MPP46_TDM_FS,
++		MPP47_TDM_DRX,
++		MPP48_TDM_DTX,
++		MPP49_TDM_CH0_RX_QL,
++		0
++	};
++
++	kirkwood_mpp_conf(kwmpp_config, NULL);
++	return 0;
++}
++
++int board_init(void)
++{
++	/*
++	 * arch number of board
++	 */
++	gd->bd->bi_arch_number = MACH_TYPE_HIKIRK;
++
++	/* adress of boot parameters */
++	gd->bd->bi_boot_params = kw_sdram_bar(0) + 0x100;
++	return 0;
++}
++
++#ifdef CONFIG_RESET_PHY_R
++
 +#define KSZ9031RNX_MMD_CTRL_REG 0xd
 +#define KSZ9031RNX_MMD_DATA_REG 0xe
 +/* Configure and enable MV88E1116/88E1121 PHY */
@@ -130,94 +275,119 @@ index c59a326..01962e0 100644
 +
 +	printf("KSZ9031RNX Initialized on %s\n", name);
 +}
-+#else
- /* Configure and enable MV88E1116/88E1121 PHY */
- void mv_phy_init(char *name)
- {
-@@ -156,7 +218,7 @@ void mv_phy_init(char *name)
- 
- 	printf(PHY_NO" Initialized on %s\n", name);
- }
--
-+#endif
- void reset_phy(void)
- {
- 	mv_phy_init("egiga0");
-@@ -169,7 +231,8 @@ void reset_phy(void)
- #endif
- 
- #if defined(CONFIG_BOARD_IS_OPENRD_CLIENT) || \
--	defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE)
-+	defined(CONFIG_BOARD_IS_OPENRD_ULTIMATE) || \
-+	defined(CONFIG_BOARD_IS_HIKIRK)
- 	/* configure and initialize both PHY's */
- 	mv_phy_init("egiga1");
- #endif
++
++void reset_phy(void)
++{
++	mv_phy_init("egiga0");
++
++	/* configure and initialize both PHY's */
++	mv_phy_init("egiga1");
++}
++#endif /* CONFIG_RESET_PHY_R */
+\ No newline at end of file
 diff --git a/boards.cfg b/boards.cfg
-index e4b0d44..ea83a5d 100644
+index e4b0d44..85717a3 100644
 --- a/boards.cfg
 +++ b/boards.cfg
 @@ -176,6 +176,7 @@ wireless_space               arm         arm926ejs   wireless_space      LaCie
  dreamplug                    arm         arm926ejs   -                   Marvell        kirkwood
  guruplug                     arm         arm926ejs   -                   Marvell        kirkwood
  mv88f6281gtw_ge              arm         arm926ejs   -                   Marvell        kirkwood
-+hikirk                       arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_HIKIRK
++hikirk                       arm         arm926ejs   hikirk              Marvell        kirkwood
  openrd_base                  arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_BASE
  openrd_client                arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_CLIENT
  openrd_ultimate              arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_ULTIMATE
-diff --git a/include/configs/openrd.h b/include/configs/openrd.h
-index 53bafe1..6ef484b 100644
---- a/include/configs/openrd.h
-+++ b/include/configs/openrd.h
-@@ -33,6 +33,9 @@
- /*
-  * Version number information
-  */
-+#ifdef CONFIG_BOARD_IS_HIKIRK
-+# define CONFIG_IDENT_STRING	"\nhikirk"
-+#else
- #ifdef CONFIG_BOARD_IS_OPENRD_ULTIMATE
- # define CONFIG_IDENT_STRING	"\nOpenRD-Ultimate"
- #else
-@@ -46,6 +49,7 @@
- #  endif
- # endif
- #endif
-+#endif
- 
- /*
-  * High Level Configuration Options (easy to change)
-@@ -65,7 +69,16 @@
- #define CONFIG_CMD_DHCP
- #define CONFIG_CMD_ENV
- #define CONFIG_CMD_MII
-+#ifdef CONFIG_BOARD_IS_HIKIRK
+diff --git a/include/configs/hikirk.h b/include/configs/hikirk.h
+new file mode 100644
+index 0000000..f455be8
+--- /dev/null
++++ b/include/configs/hikirk.h
+@@ -0,0 +1,127 @@
++/*
++ * Based on openrd.h:
++ * (C) Copyright 2009
++ * Net Insight <www.netinsight.net>
++ * Written-by: Simon Kagstrom <simon.kagstrom@netinsight.net>
++ *
++ * Based on sheevaplug.h:
++ * (C) Copyright 2009
++ * Marvell Semiconductor <www.marvell.com>
++ * Written-by: Prafulla Wadaskar <prafulla@marvell.com>
++ *
++ * See file CREDITS for list of people who contributed to this
++ * project.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of
++ * the License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
++ * MA 02110-1301 USA
++ */
++
++#ifndef _CONFIG_HIKIRK_H
++#define _CONFIG_HIKIRK_H
++
++/*
++ * Version number information
++ */
++#define CONFIG_IDENT_STRING	"\nhikirk"
++
++/*
++ * High Level Configuration Options (easy to change)
++ */
++#define CONFIG_SHEEVA_88SV131  1   /* CPU Core subversion */
++#define CONFIG_KIRKWOOD        1   /* SOC Family Name */
++#define CONFIG_KW88F6281       1   /* SOC Name */
++#define CONFIG_MACH_HIKIRK         /* Machine type */
++#define CONFIG_SKIP_LOWLEVEL_INIT  /* disable board lowlevel_init */
++
++/*
++ * Commands configuration
++ */
++#define CONFIG_SYS_NO_FLASH		/* Declare no flash (NOR/SPI) */
++#define CONFIG_SYS_MVFS
++#include <config_cmd_default.h>
++#define CONFIG_CMD_DHCP
++#define CONFIG_CMD_ENV
++#define CONFIG_CMD_MII
 +#define CONFIG_SPI_FLASH_MACRONIX
 +#define CONFIG_SPI_FLASH_STMICRO
 +#define CONFIG_CMD_SPI
 +#define CONFIG_CMD_SF
 +#define CONFIG_SF_DEFAULT_SPEED  80000000
 +#define CONFIG_ENV_SPI_MAX_HZ CONFIG_SF_DEFAULT_SPEED 
-+#else
- #define CONFIG_CMD_NAND
-+#endif
- #define CONFIG_CMD_PING
- #define CONFIG_CMD_USB
- #define CONFIG_CMD_IDE
-@@ -82,9 +95,6 @@
- #ifdef CONFIG_CMD_NAND
- #define CONFIG_ENV_IS_IN_NAND		1
- #define CONFIG_ENV_SECT_SIZE		0x20000	/* 128K */
--#else
--#define CONFIG_ENV_IS_NOWHERE		1	/* if env in SDRAM */
--#endif
- /*
-  * max 4k env size is enough, but in case of nand
-  * it has to be rounded to sector size
-@@ -92,10 +102,32 @@
- #define CONFIG_ENV_SIZE			0x20000	/* 128k */
- #define CONFIG_ENV_ADDR			0x60000
- #define CONFIG_ENV_OFFSET		0x60000	/* env starts here */
++#define CONFIG_CMD_PING
++#define CONFIG_CMD_USB
++#define CONFIG_CMD_IDE
++
++/*
++ * mv-common.h should be defined after CMD configs since it used them
++ * to enable certain macros
++ */
++#include "mv-common.h"
++
++/*
++ *  Environment variables configurations
++ */
++#ifdef CONFIG_CMD_NAND
++#define CONFIG_ENV_IS_IN_NAND		1
++#define CONFIG_ENV_SECT_SIZE		0x20000	/* 128K */
++/*
++ * max 4k env size is enough, but in case of nand
++ * it has to be rounded to sector size
++ */
++#define CONFIG_ENV_SIZE			0x20000	/* 128k */
++#define CONFIG_ENV_ADDR			0x60000
++#define CONFIG_ENV_OFFSET		0x60000	/* env starts here */
 +#else
 +#define CONFIG_ENV_IS_IN_SPI_FLASH
 +#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
@@ -227,11 +397,10 @@ index 53bafe1..6ef484b 100644
 +#define CONFIG_ENV_SIZE_REDUND		(CONFIG_ENV_SIZE)
 +#define CONFIG_ENV_SECT_SIZE    	(CONFIG_ENV_SIZE)
 +#endif
- 
- /*
-  * Default environment variables
-  */
-+#ifdef CONFIG_BOARD_IS_HIKIRK
++
++/*
++ * Default environment variables
++ */
 +#define CONFIG_BOOTCOMMAND		"run x_bootA"
 +
 +#define CONFIG_EXTRA_ENV_SETTINGS	"boot_usb=usb start;"			\
@@ -243,33 +412,25 @@ index 53bafe1..6ef484b 100644
 +	"x_kernelB=sf read 0x2000000 0x900000 0x700000\0"	\
 +	"x_bootA=sf probe; ${x_kernelA}; setenv bootargs ${x_bootargsA} ethaddr=${ethaddr} eth1addr=${eth1addr} ${x_infoA}; bootm 0x2000000\0"	\
 +	"x_bootB=sf probe; ${x_kernelB}; setenv bootargs ${x_bootargsB} ethaddr=${ethaddr} eth1addr=${eth1addr} ${x_infoB}; bootm 0x2000000\0"
-+#else
- #define CONFIG_BOOTCOMMAND		"${x_bootcmd_kernel}; "	\
- 	"setenv bootargs ${x_bootargs} ${x_bootargs_root}; "	\
- 	"${x_bootcmd_usb}; bootm 0x6400000;"
-@@ -112,6 +144,7 @@
- 	"x_bootargs_root=root=ubi0:rootfs rootfstype=ubifs\0"		\
- 	"mtdids="MTDIDS_DEFAULT"\0"					\
- 	"mtdparts="MTDPARTS_DEFAULT"\0"
-+#endif
- 
- /*
-  * Ethernet Driver configuration
-@@ -126,8 +159,12 @@
- #  define CONFIG_PHY_BASE_ADR	0x0
- #  define PHY_NO		"88E1121"
- # else
--#  define CONFIG_PHY_BASE_ADR	0x8
--#  define PHY_NO		"88E1116"
-+#  ifdef CONFIG_BOARD_IS_HIKIRK
-+#   define CONFIG_PHY_BASE_ADR	0x0
-+#  else
-+#   define CONFIG_PHY_BASE_ADR	0x8
-+#   define PHY_NO		"88E1116"
-+#  endif
- # endif
- #endif /* CONFIG_CMD_NET */
- 
++
++/*
++ * Ethernet Driver configuration
++ */
++#ifdef CONFIG_CMD_NET
++#define CONFIG_MVGBE_PORTS	{1, 1}	/* enable both ports */
++#define CONFIG_PHY_BASE_ADR	0x0
++#endif /* CONFIG_CMD_NET */
++
++/*
++ * SATA Driver configuration
++ */
++#ifdef CONFIG_MVSATA_IDE
++#define CONFIG_SYS_ATA_IDE0_OFFSET	MV_SATA_PORT0_OFFSET
++#define CONFIG_SYS_ATA_IDE1_OFFSET	MV_SATA_PORT1_OFFSET
++#endif /*CONFIG_MVSATA_IDE*/
++
++#endif /* _CONFIG_HIKIRK_H */
+\ No newline at end of file
 -- 
 1.7.9.5
 
