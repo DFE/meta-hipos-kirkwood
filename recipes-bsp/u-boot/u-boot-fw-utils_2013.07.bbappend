@@ -1,8 +1,9 @@
-PRINC := "${@int(PRINC) + 1}"
+PRINC := "${@int(PRINC) + 2}"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
 SRC_URI_append_hikirk +=  " file://fw_env.config \
+	      file://hikirk-board-support.patch \
 	    "
 
 do_install_append_hikirk () {
