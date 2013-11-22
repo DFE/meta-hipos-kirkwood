@@ -5,18 +5,19 @@ COMPATIBLE_MACHINE = "hikirk"
 DEPENDS += " lzop-native test-harness-native "
 RDEPENDS_${PN} += " mtd-utils gawk busybox "
 
-DEFAULT_PREFERENCE = "-1"
+# DEFAULT_PREFERENCE = "-1"
 PRINC := "${@int(PRINC) + 1}"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-3.10:"
 
 SRC_URI_append_hikirk =  " \
-	file://hikirk-setup.patch \
-	file://defconfig \
+    file://hikirk-setup.patch \
+    file://defconfig \
 "
 
 SRC_URI +=  " \
-	file://xor-min-byte-count.patch \
-	git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.5" \
+    file://xor-min-byte-count.patch \
+    file://PLX-Tech-3380-driver.patch \
+    git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.5" \
 "
 
 # The parameter 'type' in a git-SRC_URI is a workaround. The error is in file

@@ -1,6 +1,6 @@
-From 72966d1b653edbd9340da684dd3441397ec85e0a Mon Sep 17 00:00:00 2001
+From e728fd720380817629ae1e05a99544cf898fa67e Mon Sep 17 00:00:00 2001
 From: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
-Date: Mon, 4 Nov 2013 15:30:30 +0100
+Date: Fri, 22 Nov 2013 13:57:46 +0100
 Subject: [PATCH] usb: add PLX Tech 3380 driver
 
 Add USB PLX Tech 3380 chip driver.
@@ -9,10 +9,10 @@ Signed-off-by: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
 ---
  drivers/usb/gadget/Kconfig      |   13 +
  drivers/usb/gadget/Makefile     |    1 +
- drivers/usb/gadget/usb3380.c    | 3780 +++++++++++++++++++++++++++++++++++++++
+ drivers/usb/gadget/usb3380.c    | 3769 +++++++++++++++++++++++++++++++++++++++
  drivers/usb/gadget/usb3380.h    |  319 ++++
  drivers/usb/gadget/usb3380_hw.h |  643 +++++++
- 5 files changed, 4756 insertions(+)
+ 5 files changed, 4745 insertions(+)
  create mode 100644 drivers/usb/gadget/usb3380.c
  create mode 100644 drivers/usb/gadget/usb3380.h
  create mode 100644 drivers/usb/gadget/usb3380_hw.h
@@ -55,10 +55,10 @@ index 6afd166..f7d2c65 100644
  obj-$(CONFIG_USB_PXA27X)	+= pxa27x_udc.o
 diff --git a/drivers/usb/gadget/usb3380.c b/drivers/usb/gadget/usb3380.c
 new file mode 100644
-index 0000000..fca22de
+index 0000000..4673f8f
 --- /dev/null
 +++ b/drivers/usb/gadget/usb3380.c
-@@ -0,0 +1,3780 @@
+@@ -0,0 +1,3769 @@
 +
 +#include <linux/module.h>
 +#include <linux/pci.h>
@@ -778,7 +778,6 @@ index 0000000..fca22de
 +{
 +	struct dentry *root, *attr;
 +	int i;
-+
 +    root = debugfs_create_dir(dev->gadget.name, NULL);
 +	if (IS_ERR(root) || !root)
 +		goto err_root;
@@ -2387,16 +2386,15 @@ index 0000000..fca22de
 +	(void) readl (&dev->usb->usbctl);
 +}
 +
-+int usb_gadget_probe_driver(struct usb_gadget_driver *driver,
-+		int (*bind)(struct usb_gadget *))
++int usb3380_start(struct usb_gadget *_gadget,  struct usb_gadget_driver *driver)
 +{
 +	struct usb3380 *dev = usb3380_controller;
-+	int	retval, i;
++	int	i;
 +
 +	/* don't support low speed devices */
 +	if (!driver
 +			|| driver->max_speed < USB_SPEED_FULL
-+			|| !bind || !driver->setup)
++			|| !driver->bind || !driver->setup)
 +		return -EINVAL;
 +	if (!dev)
 +		return -ENODEV;
@@ -2411,13 +2409,6 @@ index 0000000..fca22de
 +	driver->driver.bus = NULL;
 +	dev->driver = driver;
 +	dev->gadget.dev.driver = &driver->driver;
-+	retval = bind(&dev->gadget);
-+	if (retval) {
-+		DBGMSG(dev, "bind to driver %s --> %d\n", driver->driver.name, retval);
-+		dev->driver = NULL;
-+		dev->gadget.dev.driver = NULL;
-+		return retval;
-+	}
 +
 +	/* ... then enable host detection and ep0; and we're ready
 +	 * for set_configuration as well as eventual disconnect.
@@ -2437,11 +2428,11 @@ index 0000000..fca22de
 +	return 0;
 +}
 +#ifndef USB_GADGET_NAPI
-+EXPORT_SYMBOL(usb_gadget_probe_driver);
++EXPORT_SYMBOL(usb3380_start);
 +#endif
 +
 +static int usb3380_pullup(struct usb_gadget *, int);
-+int usb_gadget_unregister_driver (struct usb_gadget_driver *driver)
++int usb3380_stop (struct usb_gadget *_gadget, struct usb_gadget_driver *driver)
 +{
 +	struct usb3380 *dev = usb3380_controller;
 +	unsigned long flags;
@@ -2467,7 +2458,7 @@ index 0000000..fca22de
 +	return 0;
 +}
 +#ifndef USB_GADGET_NAPI
-+EXPORT_SYMBOL (usb_gadget_unregister_driver);
++EXPORT_SYMBOL (usb3380_stop);
 +#endif
 +
 +/*****************************************************************************/
@@ -2706,8 +2697,8 @@ index 0000000..fca22de
 +	.set_selfpowered = usb3380_set_selfpowered,
 +	.pullup		= usb3380_pullup,
 +#ifdef USB_GADGET_NAPI
-+	.start		= usb_gadget_probe_driver,
-+	.stop		= usb_gadget_unregister_driver,
++	.udc_start	= usb3380_start,
++	.udc_stop	= usb3380_stop,
 +#endif
 +};
 +
@@ -3583,7 +3574,9 @@ index 0000000..fca22de
 +	if (dev->enabled)
 +		pci_disable_device (pdev);
 +
++#if 0
 +	device_unregister (&dev->gadget.dev);
++#endif
 +	pci_set_drvdata (pdev, NULL);
 +	usb3380_cleanup_debugfs(dev);
 +	usb3380_cleanup_logger(dev);
@@ -3593,7 +3586,7 @@ index 0000000..fca22de
 +	usb3380_controller = NULL;
 +}
 +
-+static int __devinit usb3380_probe(struct pci_dev *pdev,
++static int usb3380_probe(struct pci_dev *pdev,
 +				const struct pci_device_id *ent)
 +{
 +	struct usb3380	*dev;
@@ -3763,16 +3756,12 @@ index 0000000..fca22de
 +
 +	usb3380_controller = dev;
 +
-+	err = device_register (&dev->gadget.dev);
-+	if (err) goto done;
-+
 +	usb3380_init_debugfs(dev);
 +
-+#ifdef USB_GADGET_NAPI
-+	err = usb_add_gadget_udc(&pdev->dev, &dev->gadget);
-+	if (err) goto done;
-+#endif
-+
++        err = usb_add_gadget_udc_release(&pdev->dev, &dev->gadget,
++                        gadget_release);
++        if (err)
++                goto done;
 +	return 0;
 +
 +done:
@@ -3799,7 +3788,7 @@ index 0000000..fca22de
 +	.id_table = usb3380_pci_tbl,
 +
 +	.probe    = usb3380_probe,
-+	.remove   = __devexit_p(usb3380_remove),
++	.remove   = usb3380_remove,
 +	.shutdown = usb3380_shutdown,
 +};
 +
