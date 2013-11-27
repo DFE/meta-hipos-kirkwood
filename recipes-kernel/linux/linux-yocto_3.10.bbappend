@@ -16,7 +16,7 @@ SRC_URI_append_hikirk =  " \
 SRC_URI +=  " \
     file://xor-min-byte-count.patch \
     file://PLX-Tech-3380-driver.patch \
-    git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.5" \
+    git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.7" \
 "
 
 # The parameter 'type' in a git-SRC_URI is a workaround. The error is in file
@@ -35,6 +35,6 @@ do_configure_prepend() {
 do_patch_append() {
 #	mkdir -p ${S}/drivers/darmok
 #	cp ${WORKDIR}/darmok/drbcc-kmod/drbcc-kmod-sources/* ${S}/drivers/darmok
-#	patch -p1 < ${WORKDIR}/darmok/drbcc-kmod/drbcc-kmod-sources/linux-kirkwood_3.4.patch
+#	patch -p1 < ${WORKDIR}/darmok/drbcc-kmod/drbcc-kmod-sources/linux-kirkwood_3.10.patch
 }
 
