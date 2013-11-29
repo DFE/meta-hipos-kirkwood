@@ -5,7 +5,7 @@ COMPATIBLE_MACHINE = "hikirk"
 DEPENDS += " lzop-native test-harness-native "
 RDEPENDS_${PN} += " mtd-utils gawk busybox "
 
-PRINC := "${@int(PRINC) + 2}"
+PRINC := "${@int(PRINC) + 3}"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-3.10:"
 
 SRC_URI_append_hikirk =  " \
@@ -16,7 +16,7 @@ SRC_URI_append_hikirk =  " \
 SRC_URI +=  " \
     file://xor-min-byte-count.patch \
     file://PLX-Tech-3380-driver.patch \
-    git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.7" \
+    git://github.com/DFE/darmok.git;destsuffix=darmok;type=not-kmeta;tag="darmok_v0.9" \
 "
 
 # The parameter 'type' in a git-SRC_URI is a workaround. The error is in file
@@ -33,8 +33,8 @@ do_configure_prepend() {
 }
 
 do_patch_append() {
-#	mkdir -p ${S}/drivers/darmok
-#	cp ${WORKDIR}/darmok/drbcc-kmod/drbcc-kmod-sources/* ${S}/drivers/darmok
-#	patch -p1 < ${WORKDIR}/darmok/drbcc-kmod/drbcc-kmod-sources/linux-kirkwood_3.10.patch
+	mkdir -p ${S}/drivers/darmok
+	cp ${WORKDIR}/darmok/drbcc-kmod/drbcc-kmod-sources/* ${S}/drivers/darmok
+	patch -p1 < ${WORKDIR}/darmok/drbcc-kmod/drbcc-kmod-sources/linux-kirkwood_3.10.patch
 }
 
