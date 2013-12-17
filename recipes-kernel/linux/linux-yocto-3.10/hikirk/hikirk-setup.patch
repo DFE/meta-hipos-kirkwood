@@ -146,11 +146,11 @@ index 0000000..1c7f229
 +
 +
 +static struct mv643xx_eth_platform_data hikirk_ge00_data = {
-+	.phy_addr	= MV643XX_ETH_PHY_ADDR(0),
++	.phy_addr	= MV643XX_ETH_PHY_ADDR(2),
 +};
 +
 +static struct mv643xx_eth_platform_data hikirk_ge01_data = {
-+	.phy_addr	= MV643XX_ETH_PHY_ADDR(1),
++	.phy_addr	= MV643XX_ETH_PHY_ADDR(3),
 +};
 +
 +static struct mv_sata_platform_data hikirk_sata_data = {
