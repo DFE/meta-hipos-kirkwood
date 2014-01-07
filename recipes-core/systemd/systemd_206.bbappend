@@ -1,7 +1,5 @@
 # install hipos.rules for udev
 
-COMPATIBLE_MACHINE = "hikirk"
-
 PRINC := "${@int(PRINC) + 2}"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
