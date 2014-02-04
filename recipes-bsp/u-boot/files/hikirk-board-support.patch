@@ -414,7 +414,7 @@ index 0000000..8393990
 +#define CONFIG_BOOTCOMMAND		"run x_bootA"
 +
 +#define CONFIG_EXTRA_ENV_SETTINGS	"boot_usb=usb start;"			\
-+	"setenv bootargs 'console=ttyS0,115200 rw root=/dev/sda2 rootwait ethaddr=${ethaddr} eth1addr=${eth1addr}';"	\
++	"setenv bootargs console=ttyS0,115200 rw root=/dev/sda2 rootwait ethaddr=${ethaddr} eth1addr=${eth1addr};"	\
 +	"fatload usb 0 0x2000000 uImage;bootm 0x2000000\0"			\
 +	"x_bootargsA=console=ttyS0,115200 vmalloc=50M rw root=/dev/mmcblk0p1 rootflags=discard rootwait\0"	\
 +	"x_bootargsB=console=ttyS0,115200 vmalloc=50M rw root=/dev/mmcblk0p2 rootflags=discard rootwait\0"	\
