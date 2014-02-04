@@ -1,29 +1,29 @@
-From 039cdc1db80cd19fe6b4098af567610ba6c686f1 Mon Sep 17 00:00:00 2001
-From: Angelika Tobisch <tobisch@dresearch-fe.de>
-Date: Wed, 25 Sep 2013 15:54:43 +0200
+From a33c3b19a0f601f00f9117d85c2b66a1a9466e90 Mon Sep 17 00:00:00 2001
+From: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
+Date: Tue, 4 Feb 2014 15:24:31 +0100
 Subject: [PATCH] hikirk: add hikirk board
 
-Add support for hikirk board.
+Add support for hikirk board
 
-HYP-7326
-
-Signed-off-by: Angelika Tobisch <tobisch@dresearch-fe.de>
+Signed-off-by: Angelika Tobisch <angelika.tobisch@dresearch-fe.de>
+Signed-off-by: Eik Binscheck <eik.binscheck@dresearch-fe.de>
+Signed-off-by: Mario Schuknecht <mario.schuknecht@dresearch-fe.de>
 ---
  arch/arm/include/asm/mach-types.h |   13 +++
  board/Marvell/hikirk/Makefile     |   51 +++++++++++
  board/Marvell/hikirk/hikirk.c     |  170 +++++++++++++++++++++++++++++++++++++
  boards.cfg                        |    1 +
- include/configs/hikirk.h          |  127 +++++++++++++++++++++++++++
- 5 files changed, 362 insertions(+)
+ include/configs/hikirk.h          |  137 ++++++++++++++++++++++++++++++
+ 5 files changed, 372 insertions(+)
  create mode 100644 board/Marvell/hikirk/Makefile
  create mode 100644 board/Marvell/hikirk/hikirk.c
  create mode 100644 include/configs/hikirk.h
 
 diff --git a/arch/arm/include/asm/mach-types.h b/arch/arm/include/asm/mach-types.h
-index a676b6d..a34b34d 100644
+index 440b041..7d5d5b4 100644
 --- a/arch/arm/include/asm/mach-types.h
 +++ b/arch/arm/include/asm/mach-types.h
-@@ -1107,6 +1107,7 @@ extern unsigned int __machine_arch_type;
+@@ -1106,6 +1106,7 @@ extern unsigned int __machine_arch_type;
  #define MACH_TYPE_OMAP5_SEVM           3777
  #define MACH_TYPE_ARMADILLO_800EVA     3863
  #define MACH_TYPE_KZM9G                4140
@@ -31,7 +31,7 @@ index a676b6d..a34b34d 100644
  
  #ifdef CONFIG_ARCH_EBSA110
  # ifdef machine_arch_type
-@@ -14248,6 +14249,18 @@ extern unsigned int __machine_arch_type;
+@@ -14235,6 +14236,18 @@ extern unsigned int __machine_arch_type;
  # define machine_is_kzm9g()	(0)
  #endif
  
@@ -110,7 +110,7 @@ index 0000000..5856e26
 \ No newline at end of file
 diff --git a/board/Marvell/hikirk/hikirk.c b/board/Marvell/hikirk/hikirk.c
 new file mode 100644
-index 0000000..3d0b618
+index 0000000..5ad38fd
 --- /dev/null
 +++ b/board/Marvell/hikirk/hikirk.c
 @@ -0,0 +1,170 @@
@@ -286,10 +286,10 @@ index 0000000..3d0b618
 +#endif /* CONFIG_RESET_PHY_R */
 \ No newline at end of file
 diff --git a/boards.cfg b/boards.cfg
-index e4b0d44..85717a3 100644
+index 6a368de..324e4ac 100644
 --- a/boards.cfg
 +++ b/boards.cfg
-@@ -176,6 +176,7 @@ wireless_space               arm         arm926ejs   wireless_space      LaCie
+@@ -181,6 +181,7 @@ wireless_space               arm         arm926ejs   wireless_space      LaCie
  dreamplug                    arm         arm926ejs   -                   Marvell        kirkwood
  guruplug                     arm         arm926ejs   -                   Marvell        kirkwood
  mv88f6281gtw_ge              arm         arm926ejs   -                   Marvell        kirkwood
@@ -299,10 +299,10 @@ index e4b0d44..85717a3 100644
  openrd_ultimate              arm         arm926ejs   openrd              Marvell        kirkwood        openrd:BOARD_IS_OPENRD_ULTIMATE
 diff --git a/include/configs/hikirk.h b/include/configs/hikirk.h
 new file mode 100644
-index 0000000..f455be8
+index 0000000..8393990
 --- /dev/null
 +++ b/include/configs/hikirk.h
-@@ -0,0 +1,127 @@
+@@ -0,0 +1,137 @@
 +/*
 + * Based on openrd.h:
 + * (C) Copyright 2009
@@ -399,6 +399,16 @@ index 0000000..f455be8
 +#endif
 +
 +/*
++ * auto boot
++ */
++#define CONFIG_AUTOBOOT_KEYED
++#define CONFIG_AUTOBOOT_STOP_STR "."
++#define CONFIG_ZERO_BOOTDELAY_CHECK
++#define CONFIG_BOOTDELAY 0
++#define CONFIG_AUTOBOOT_PROMPT \
++                        "Press . to abort autoboot in %d seconds\n",bootdelay
++
++/*
 + * Default environment variables
 + */
 +#define CONFIG_BOOTCOMMAND		"run x_bootA"
@@ -430,7 +440,6 @@ index 0000000..f455be8
 +#endif /*CONFIG_MVSATA_IDE*/
 +
 +#endif /* _CONFIG_HIKIRK_H */
-\ No newline at end of file
 -- 
 1.7.9.5
 
