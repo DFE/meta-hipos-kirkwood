@@ -260,7 +260,7 @@ index 0000000..5ad38fd
 +	}
 +
 +	/*
-+	 * Enable RGMII delay on rx clock
++	 * Enable RGMII delay on rx and tx clock
 +	 * Ref: sec RGMII Pad Skew Registers of chip datasheet
 +	 */
 +	miiphy_write(name, devadr, KSZ9031RNX_MMD_CTRL_REG, 0x2);
@@ -268,7 +268,7 @@ index 0000000..5ad38fd
 +	miiphy_write(name, devadr, KSZ9031RNX_MMD_CTRL_REG, 0x4002);
 +
 +	miiphy_read(name,  devadr, KSZ9031RNX_MMD_DATA_REG, &reg);
-+	miiphy_write(name, devadr, KSZ9031RNX_MMD_DATA_REG, reg | 0x1F);
++	miiphy_write(name, devadr, KSZ9031RNX_MMD_DATA_REG, reg | 0x3FF);
 +
 +	/* reset the phy */
 +	miiphy_reset(name, devadr);
