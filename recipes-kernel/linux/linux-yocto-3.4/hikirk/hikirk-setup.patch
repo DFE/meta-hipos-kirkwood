@@ -83,38 +83,38 @@ index 0000000..1c7f229
 +static struct mtd_partition spi_flash_parts[] = {
 +        {
 +                .name = "boot-header",
-+                .size = 65536,
++                .size = 131072,
 +                .offset = 0,
 +        },
-+	{
++       {
 +                .name = "u-boot-0",
-+                .size = 917504,
-+                .offset = 65536,
++                .size = 851968,
++                .offset = 131072,
 +        },
-+	{
++       {
 +                .name = "u-boot-1",
-+                .size = 917504,
++                .size = 851968,
 +                .offset = 983040,
 +        },
-+	{
++       {
++                .name = "kernel-0",
++                .size = 7340032,
++                .offset = 1835008,
++        },
++       {
++                .name = "kernel-1",
++                .size = 7340032,
++                .offset = 9175040,
++        },
++       {
 +                .name = "u-boot-env",
 +                .size = 131072,
-+                .offset = 1900544,
++                .offset = 16515072,
 +        },
 +       {
 +                .name = "spare",
-+                .size = 65536,
-+                .offset = 2031616,
-+        },
-+	{
-+                .name = "kernel-0",
-+                .size = 7340032,
-+                .offset = 2097152,
-+        },
-+	{
-+                .name = "kernel-1",
-+                .size = 7340032,
-+                .offset = 9437184,
++                .size = 131072,
++                .offset = 16646144,
 +        },
 +
 +};
