@@ -1,0 +1,26 @@
+diff --git a/drivers/mtd/devices/m25p80.c b/drivers/mtd/devices/m25p80.c
+index 2f3d2a5..12615c8 100644
+--- a/drivers/mtd/devices/m25p80.c
++++ b/drivers/mtd/devices/m25p80.c
+@@ -67,6 +67,8 @@
+ #define	SR_BP0			4	/* Block protect 0 */
+ #define	SR_BP1			8	/* Block protect 1 */
+ #define	SR_BP2			0x10	/* Block protect 2 */
++#define SR_BP_TB                0x20    /* Block protect Top/Bootm */
++#define SR_BP3                  0x40    /* Block protect 3 */
+ #define	SR_SRWD			0x80	/* SR write protect */
+ 
+ /* Define max times to check status register before we give up. */
+@@ -998,12 +1000,6 @@ static int m25p_probe(struct spi_device *spi)
+ 	flash->mtd._erase = m25p80_erase;
+ 	flash->mtd._read = m25p80_read;
+ 
+-	/* flash protection support for STmicro chips */
+-	if (JEDEC_MFR(info->jedec_id) == CFI_MFR_ST) {
+-		flash->mtd._lock = m25p80_lock;
+-		flash->mtd._unlock = m25p80_unlock;
+-	}
+-
+ 	/* sst flash chips use AAI word program */
+ 	if (info->flags & SST_WRITE)
+ 		flash->mtd._write = sst_write;
