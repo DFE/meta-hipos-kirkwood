@@ -2,7 +2,7 @@ require recipes-bsp/u-boot/u-boot_2013.07.bb
 
 COMPATIBLE_MACHINE = "hikirk"
 
-PR = "r5"
+PR = "r3"
 
 SRC_URI_append_hikirk = " \
           file://kwbimage_hikirk_533ddr3_nand.cfg \

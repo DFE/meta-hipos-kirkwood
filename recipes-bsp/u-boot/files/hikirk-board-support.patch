@@ -391,8 +391,8 @@ index 0000000..8393990
 +#else
 +#define CONFIG_ENV_IS_IN_SPI_FLASH
 +#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
-+#define CONFIG_ENV_OFFSET       	0xfc0000
-+#define CONFIG_ENV_OFFSET_REDUND	0xfd0000
++#define CONFIG_ENV_OFFSET       	0x1d0000
++#define CONFIG_ENV_OFFSET_REDUND	0x1e0000
 +#define CONFIG_ENV_SIZE         	0x10000
 +#define CONFIG_ENV_SIZE_REDUND		(CONFIG_ENV_SIZE)
 +#define CONFIG_ENV_SECT_SIZE    	(CONFIG_ENV_SIZE)
@@ -418,8 +418,8 @@ index 0000000..8393990
 +	"fatload usb 0 0x2000000 uImage;bootm 0x2000000\0"			\
 +	"x_bootargsA=console=ttyS0,115200 vmalloc=50M rw root=/dev/mmcblk0p1 rootflags=discard rootwait\0"	\
 +	"x_bootargsB=console=ttyS0,115200 vmalloc=50M rw root=/dev/mmcblk0p2 rootflags=discard rootwait\0"	\
-+	"x_kernelA=sf read 0x2000000 0x1c0000 0x700000\0"	\
-+	"x_kernelB=sf read 0x2000000 0x8c0000 0x700000\0"	\
++	"x_kernelA=sf read 0x2000000 0x200000 0x700000\0"	\
++	"x_kernelB=sf read 0x2000000 0x900000 0x700000\0"	\
 +	"x_bootA=sf probe; ${x_kernelA}; setenv bootargs ${x_bootargsA} ethaddr=${ethaddr} eth1addr=${eth1addr} ${x_infoA}; bootm 0x2000000\0"	\
 +	"x_bootB=sf probe; ${x_kernelB}; setenv bootargs ${x_bootargsB} ethaddr=${ethaddr} eth1addr=${eth1addr} ${x_infoB}; bootm 0x2000000\0"
 +

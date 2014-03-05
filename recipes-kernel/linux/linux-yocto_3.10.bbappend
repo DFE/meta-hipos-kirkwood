@@ -5,12 +5,11 @@ COMPATIBLE_MACHINE = "hikirk"
 DEPENDS += " lzop-native test-harness-native "
 RDEPENDS_${PN} += " mtd-utils gawk busybox "
 
-PRINC := "${@int(PRINC) + 8}"
+PRINC := "${@int(PRINC) + 5}"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-3.10:"
 
 SRC_URI_append_hikirk =  " \
     file://hikirk-setup.patch \
-    file://m25p80.patch \
     file://defconfig \
 "
 

@@ -1,4 +1,4 @@
-PRINC := "${@int(PRINC) + 6}"
+PRINC := "${@int(PRINC) + 2}"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
 
