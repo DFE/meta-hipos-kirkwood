@@ -5,23 +5,30 @@ COMPATIBLE_MACHINE = "hikirk"
 PR = "r3"
 
 SRC_URI_append_hikirk = " \
-          file://kwbimage_hikirk_533ddr3_nand.cfg \
-	      file://kwbimage_hikirk_533ddr3_uart.cfg \
-	      file://kwbimage_hikirk_533ddr3_sata.cfg \
-	      file://kwbimage_hikirk_533ddr3_spi.cfg \
-	      file://kwbimage_hikirk_500ddr3_uart.cfg \
-	      file://kwbimage_hikirk_500ddr3_sata.cfg \
-	      file://kwbimage_hikirk_500ddr3_spi.cfg \
-	      file://hikirk-board-support.patch \
-          file://speed_up_spi.patch \
+	file://kwbimage_hikirk_533ddr3.data \
+	file://kwbimage_hikirk_500ddr3.data \
+	file://kwbimage_nand.hdr \
+	file://kwbimage_uart.hdr \
+	file://kwbimage_sata.hdr \
+	file://kwbimage_spi.hdr \
+	file://hikirk-board-support.patch \
+	file://speed_up_spi.patch \
 "
 
 do_compile_append_hikirk () {
-	for kwcfg in ${WORKDIR}/kwbimage_hikirk_*.cfg
+	for kwdata in ${WORKDIR}/kwbimage_hikirk_*.data
 	do
-		KW_BOOT_TYPE=${kwcfg##*kwbimage_hikirk_}
-		KW_BOOT_TYPE=${KW_BOOT_TYPE%.cfg}
-		${S}/tools/mkimage -n ${kwcfg} -T kwbimage -a 0x00600000 -e 0x00600000 -d ${UBOOT_BINARY} u-boot_hikirk_${KW_BOOT_TYPE}.bin
+		KW_BOOT_DATA=${kwdata##*kwbimage_hikirk_}
+		KW_BOOT_DATA=${KW_BOOT_DATA%.data}
+		for kwhdr in ${WORKDIR}/kwbimage_*.hdr
+		do
+			KW_BOOT_HDR=${kwhdr##*kwbimage_}
+			KW_BOOT_HDR=${KW_BOOT_HDR%.hdr}
+			CNF_FILE="${KW_BOOT_DATA}_${KW_BOOT_HDR}.cfg"
+			cp ${kwhdr} ${CNF_FILE}
+			cat ${kwdata} >> ${CNF_FILE}
+			${S}/tools/mkimage -n ${CNF_FILE} -T kwbimage -a 0x00600000 -e 0x00600000 -d ${UBOOT_BINARY} u-boot_hikirk_${KW_BOOT_DATA}_${KW_BOOT_HDR}.bin
+		done
 	done
 }
 
