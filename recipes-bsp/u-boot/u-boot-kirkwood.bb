@@ -2,7 +2,7 @@ require recipes-bsp/u-boot/u-boot_2013.07.bb
 
 COMPATIBLE_MACHINE = "hikirk"
 
-PR = "r3"
+PR = "r4"
 
 SRC_URI_append_hikirk = " \
 	file://kwbimage_hikirk_533ddr3.data \
@@ -32,12 +32,60 @@ do_compile_append_hikirk () {
 	done
 }
 
+python do_headerhikirk () {
+    import glob
+
+    workdir = d.getVar('WORKDIR', True)
+    srcdir = d.getVar('S', True)
+
+    def calc_checksum(buf):
+        sum = 0
+        for byte in buf:
+            sum = ((sum + byte) & 0xFF)
+        return sum
+
+    def set_header(hdr, src, identifier):
+        hdr[0] = (identifier & 0xFF)
+        hdr[0xC] = (src & 0xFF)
+        hdr[0xD] = ((src>>8)  & 0xFF)
+        hdr[0xE] = ((src>>16) & 0xFF)
+        hdr[0xF] = ((src>>24) & 0xFF)
+        hdr[0x1F] = calc_checksum(hdr[:31])
+        return hdr
+
+    with open("u-boot_hikirk_500ddr3_sata.bin", mode='rb+') as fp:
+        hdr = bytearray(fp.read(512))
+        img = fp.read()
+
+        bb.note("Create spi header with offset 0x010000")
+        hdr = set_header(hdr, 0x010000, 0x5a)
+        with open("u-boot_hikirk_500ddr3_spi_64k.hdr", 'wb') as f:
+            f.write(hdr)
+        bb.note("Create spi header with offset 0x0F0000")
+        hdr = set_header(hdr, 0x0F0000, 0x5a)
+        with open("u-boot_hikirk_500ddr3_spi_960k.hdr", 'wb') as f:
+            f.write(hdr)
+        bb.note("Create image without header")
+        with open("u-boot_hikirk_500ddr3.bin", 'wb') as f:
+            f.write(img)
+
+        bb.note("Set sata image header source offset to 2")
+        hdr = set_header(hdr, 0x02, 0x78)
+        fp.seek(0)
+        fp.write(hdr[:32])
+}
+
+addtask headerhikirk after do_compile before do_install
+
 do_install_append_hikirk () {
 	install ${S}/u-boot_hikirk_*.bin ${D}/boot/
+	install ${S}/u-boot_hikirk_*.hdr ${D}/boot/
 }
 
 do_deploy_append_hikirk () {
 	rm -f ${DEPLOYDIR}/u-boot_hikirk_*.bin
+	rm -f ${DEPLOYDIR}/u-boot_hikirk_*.hdr
 	install ${S}/u-boot_hikirk_*.bin ${DEPLOYDIR}/
+	install ${S}/u-boot_hikirk_*.hdr ${DEPLOYDIR}/
 }
 
