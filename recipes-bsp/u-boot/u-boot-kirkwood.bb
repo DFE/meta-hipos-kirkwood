@@ -2,7 +2,7 @@ require recipes-bsp/u-boot/u-boot_2013.07.bb
 
 COMPATIBLE_MACHINE = "hikirk"
 
-PR = "r4"
+PR = "r5"
 
 SRC_URI_append_hikirk = " \
 	file://kwbimage_hikirk_533ddr3.data \
@@ -16,6 +16,7 @@ SRC_URI_append_hikirk = " \
 "
 
 do_compile_append_hikirk () {
+	UBOOT_VERSION=`basename ${UBOOT_IMAGE} .bin`
 	for kwdata in ${WORKDIR}/kwbimage_hikirk_*.data
 	do
 		KW_BOOT_DATA=${kwdata##*kwbimage_hikirk_}
@@ -27,7 +28,7 @@ do_compile_append_hikirk () {
 			CNF_FILE="${KW_BOOT_DATA}_${KW_BOOT_HDR}.cfg"
 			cp ${kwhdr} ${CNF_FILE}
 			cat ${kwdata} >> ${CNF_FILE}
-			${S}/tools/mkimage -n ${CNF_FILE} -T kwbimage -a 0x00600000 -e 0x00600000 -d ${UBOOT_BINARY} u-boot_hikirk_${KW_BOOT_DATA}_${KW_BOOT_HDR}.bin
+			${S}/tools/mkimage -n ${CNF_FILE} -T kwbimage -a 0x00600000 -e 0x00600000 -d ${UBOOT_BINARY} ${UBOOT_VERSION}_${KW_BOOT_DATA}_${KW_BOOT_HDR}.bin
 		done
 	done
 }
@@ -37,6 +38,7 @@ python do_headerhikirk () {
 
     workdir = d.getVar('WORKDIR', True)
     srcdir = d.getVar('S', True)
+    ubootbin = d.getVar('UBOOT_IMAGE', True)[:-4]
 
     def calc_checksum(buf):
         sum = 0
@@ -53,7 +55,7 @@ python do_headerhikirk () {
         hdr[0x1F] = calc_checksum(hdr[:31])
         return hdr
 
-    with open("u-boot_hikirk_500ddr3_sata.bin", mode='rb+') as fp:
+    with open(ubootbin + "_500ddr3_sata.bin", mode='rb+') as fp:
         hdr = bytearray(fp.read(512))
         img = fp.read()
 
@@ -66,7 +68,7 @@ python do_headerhikirk () {
         with open("u-boot_hikirk_500ddr3_spi_960k.hdr", 'wb') as f:
             f.write(hdr)
         bb.note("Create image without header")
-        with open("u-boot_hikirk_500ddr3.bin", 'wb') as f:
+        with open(ubootbin + "_500ddr3.bin", 'wb') as f:
             f.write(img)
 
         bb.note("Set sata image header source offset to 2")
@@ -78,14 +80,14 @@ python do_headerhikirk () {
 addtask headerhikirk after do_compile before do_install
 
 do_install_append_hikirk () {
-	install ${S}/u-boot_hikirk_*.bin ${D}/boot/
+	install ${S}/u-boot-hikirk-*.bin ${D}/boot/
 	install ${S}/u-boot_hikirk_*.hdr ${D}/boot/
 }
 
 do_deploy_append_hikirk () {
-	rm -f ${DEPLOYDIR}/u-boot_hikirk_*.bin
+	rm -f ${DEPLOYDIR}/u-boot-hikirk-*.bin
 	rm -f ${DEPLOYDIR}/u-boot_hikirk_*.hdr
-	install ${S}/u-boot_hikirk_*.bin ${DEPLOYDIR}/
+	install ${S}/u-boot-hikirk-*.bin ${DEPLOYDIR}/
 	install ${S}/u-boot_hikirk_*.hdr ${DEPLOYDIR}/
 }
 
