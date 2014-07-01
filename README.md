@@ -1,6 +1,4 @@
+Since Yocto-1.6 (daisy) meta-hipos-kirkwood is no longer a separate
+repository. It is integrated into https://github.com/DFE/meta-hipos now.
 
-meta-hipos-kirkwood
-===================
 
-This BSP layer adds support of Marvell SoC 88F6282 to HIPOS. Check out the HIPOS distro layer,
-our main layer which integrates this BSP as well as other BSPs. It's at <https://github.com/DFE/HIPOS>.
